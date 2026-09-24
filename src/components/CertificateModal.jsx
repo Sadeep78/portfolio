@@ -14,7 +14,7 @@ export default function CertificateModal({ certificate, onClose }) {
         style={{ maxWidth: '920px', height: '88vh', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' }}
       >
         {/* Modal Header */}
-        <div style={{ padding: '1.25rem 1.5rem', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '1.25rem 1.5rem', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               {certificate.title}
@@ -24,7 +24,7 @@ export default function CertificateModal({ certificate, onClose }) {
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
             {certificate.pdfUrl && (
               <a 
                 href={certificate.pdfUrl} 
@@ -32,7 +32,18 @@ export default function CertificateModal({ certificate, onClose }) {
                 className="btn btn-primary btn-sm"
               >
                 <Download size={15} />
-                <span>Download File</span>
+                <span>{certificate.pdfUrlAlt ? 'Download Stage 2' : 'Download File'}</span>
+              </a>
+            )}
+
+            {certificate.pdfUrlAlt && (
+              <a 
+                href={certificate.pdfUrlAlt} 
+                download={certificate.fileNameAlt || `${certificate.title}_Stage1`}
+                className="btn btn-secondary btn-sm"
+              >
+                <Download size={15} />
+                <span>Download Stage 1</span>
               </a>
             )}
 
