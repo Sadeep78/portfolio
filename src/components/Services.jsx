@@ -178,8 +178,8 @@ export default function Services() {
                   <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#25D366' }}>{service.advancePrice}</span>
                 </div>
                 {service.id === 'fullstack-dev' && (
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', borderTop: '1px dashed var(--border-color)', paddingTop: '0.5rem', marginTop: '0.5rem' }}>
-                    * Remaining LKR 11,000 payable within 1 week after project completion. Deployed to Vercel/Netlify.
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', borderTop: '1px dashed var(--border-color)', paddingTop: '0.55rem', marginTop: '0.55rem', lineHeight: 1.5 }}>
+                    <strong style={{ color: 'var(--accent-cyan)' }}>Remaining Amount:</strong> LKR 11,000 payable within 1 week after project completion. Deployed to Vercel/Netlify.
                   </div>
                 )}
               </div>
