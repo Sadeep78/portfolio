@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, CreditCard, Upload, Send, MessageSquare, ArrowRight, X, ShieldCheck, FileText, Building2, HelpCircle, Check } from 'lucide-react';
+import { CheckCircle2, CreditCard, Upload, Send, MessageSquare, ArrowRight, X, ShieldCheck, FileText, Building2, HelpCircle, Check, AlertCircle, Phone, Smartphone } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
 
 export default function Services() {
@@ -8,7 +8,14 @@ export default function Services() {
   const [paymentMethod, setPaymentMethod] = useState('bank'); // 'bank' or 'stripe'
   
   // Booking Form State
-  const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', phone: '', message: '' });
+  const [customerInfo, setCustomerInfo] = useState({ 
+    name: '', 
+    email: '', 
+    phone: '', 
+    sameAsPhone: true,
+    whatsapp: '', 
+    message: '' 
+  });
   const [confirmYes, setConfirmYes] = useState('');
   const [slipFile, setSlipFile] = useState(null);
   const [slipPreview, setSlipPreview] = useState(null);
@@ -28,7 +35,7 @@ export default function Services() {
     setSelectedService(null);
     setSlipFile(null);
     setSlipPreview(null);
-    setCustomerInfo({ name: '', email: '', phone: '', message: '' });
+    setCustomerInfo({ name: '', email: '', phone: '', sameAsPhone: true, whatsapp: '', message: '' });
     setConfirmYes('');
     setFormErrors({});
     setBookingSubmitted(false);
@@ -68,7 +75,11 @@ export default function Services() {
     }
 
     if (!customerInfo.phone.trim()) {
-      errors.phone = 'Please enter your phone / WhatsApp number.';
+      errors.phone = 'Please enter your contact phone number.';
+    }
+
+    if (!customerInfo.sameAsPhone && !customerInfo.whatsapp.trim()) {
+      errors.whatsapp = 'Please enter your separate WhatsApp number.';
     }
 
     if (paymentMethod === 'bank') {
@@ -76,7 +87,7 @@ export default function Services() {
         errors.slip = 'Please upload your bank transfer deposit slip file.';
       }
       if (!confirmYes.trim() || confirmYes.trim().toUpperCase() !== 'YES') {
-        errors.confirmYes = 'Please type YES to confirm you entered your Full Name as the Payment Reference / Remark.';
+        errors.confirmYes = 'Please type YES to confirm you entered your Full Name & Phone Number as the Payment Reference.';
       }
     }
 
@@ -102,14 +113,18 @@ export default function Services() {
     const fullPrice = selectedService.fullPrice;
     const remainingFee = selectedService.remainingPrice;
 
+    const activePhone = customerInfo.phone.trim();
+    const activeWhatsApp = customerInfo.sameAsPhone ? activePhone : customerInfo.whatsapp.trim();
+    const activeReference = `${customerInfo.name.trim()} (${activePhone})`;
+
     let paymentMethodText = '';
     if (paymentMethod === 'bank') {
-      paymentMethodText = `🏦 *Payment Method:* Commercial Bank Slip Upload%0A📌 *Bank Details:* ${bankDetails.bankName} (${bankDetails.branch}) - Acc: ${bankDetails.accountNumber}%0A🏷️ *Payment Reference Used:* ${encodeURIComponent(customerInfo.name.trim())}%0A📎 *Slip File Attached:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
+      paymentMethodText = `🏦 *Payment Method:* Commercial Bank Slip Upload%0A📌 *Bank Details:* ${bankDetails.bankName} (${bankDetails.branch}) - Acc: ${bankDetails.accountNumber}%0A🏷️ *Payment Reference Used:* ${encodeURIComponent(activeReference)}%0A📎 *Slip File Attached:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
     } else {
       paymentMethodText = `💳 *Payment Method:* Stripe Credit/Debit Card (Advance Paid LKR 1,000)%0A🔒 *Cardholder Name:* ${encodeURIComponent(stripeCard.name)}`;
     }
 
-    const whatsappMessage = `Hello Sadeep,%0A%0AI have booked a service on your portfolio website and submitted my advance payment details:%0A%0A🎯 *Service Booked:* ${encodeURIComponent(serviceTitle)}%0A💰 *Advance Fee Paid:* ${encodeURIComponent(advanceFee)}%0A💵 *Full Service Price:* ${encodeURIComponent(fullPrice)}%0A⏳ *Remaining Balance:* ${encodeURIComponent(remainingFee)} (Payable within 1 week of delivery)%0A%0A👤 *Customer Name:* ${encodeURIComponent(customerInfo.name.trim())}%0A📧 *Email:* ${encodeURIComponent(customerInfo.email.trim())}%0A📱 *Phone / WhatsApp:* ${encodeURIComponent(customerInfo.phone.trim())}%0A💬 *Additional Notes:* ${encodeURIComponent(customerInfo.message.trim() || 'N/A')}%0A%0A${paymentMethodText}%0A%0APlease verify and confirm my booking request. Thank you!`;
+    const whatsappMessage = `Hello Sadeep,%0A%0AI have booked a service on your portfolio website and submitted my advance payment details:%0A%0A🎯 *Service Booked:* ${encodeURIComponent(serviceTitle)}%0A💰 *Advance Fee Paid:* ${encodeURIComponent(advanceFee)}%0A💵 *Full Service Price:* ${encodeURIComponent(fullPrice)}%0A⏳ *Remaining Balance:* ${encodeURIComponent(remainingFee)} (Payable within 1 week of delivery)%0A%0A👤 *Customer Name:* ${encodeURIComponent(customerInfo.name.trim())}%0A📧 *Email:* ${encodeURIComponent(customerInfo.email.trim())}%0A📞 *Contact Phone:* ${encodeURIComponent(activePhone)}%0A💬 *WhatsApp Number:* ${encodeURIComponent(activeWhatsApp)}%0A💬 *Additional Notes:* ${encodeURIComponent(customerInfo.message.trim() || 'N/A')}%0A%0A${paymentMethodText}%0A%0APlease verify and confirm my booking request. Thank you!`;
 
     const whatsappUrl = `https://wa.me/${bankDetails.whatsappNumber}?text=${whatsappMessage}`;
 
@@ -265,17 +280,46 @@ export default function Services() {
                     </div>
                   </div>
 
-                  <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                    <label className="form-label">Phone / WhatsApp Number *</label>
+                  {/* Phone & Separate WhatsApp Input */}
+                  <div className="form-group" style={{ marginBottom: '1rem' }}>
+                    <label className="form-label">Contact Phone Number *</label>
                     <input 
                       type="text" 
-                      placeholder="e.g. +94 77 123 4567" 
+                      placeholder="e.g. 0771234567 or +94 77 123 4567" 
                       className="form-input"
                       style={formErrors.phone ? { borderColor: '#ef4444' } : {}}
                       value={customerInfo.phone}
                       onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
                     />
                     {formErrors.phone && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>{formErrors.phone}</span>}
+                  </div>
+
+                  {/* Checkbox: WhatsApp same as Phone */}
+                  <div style={{ marginBottom: '1.25rem', background: 'var(--bg-tertiary)', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+                      <input 
+                        type="checkbox" 
+                        checked={customerInfo.sameAsPhone}
+                        onChange={(e) => setCustomerInfo({ ...customerInfo, sameAsPhone: e.target.checked })}
+                        style={{ width: '16px', height: '16px', accentColor: '#25D366' }}
+                      />
+                      <span>WhatsApp Number is the same as Contact Phone Number</span>
+                    </label>
+
+                    {!customerInfo.sameAsPhone && (
+                      <div className="form-group" style={{ marginTop: '0.85rem', marginBottom: 0 }}>
+                        <label className="form-label">Separate WhatsApp Number *</label>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. +94 70 987 6543" 
+                          className="form-input"
+                          style={formErrors.whatsapp ? { borderColor: '#ef4444' } : {}}
+                          value={customerInfo.whatsapp}
+                          onChange={(e) => setCustomerInfo({ ...customerInfo, whatsapp: e.target.value })}
+                        />
+                        {formErrors.whatsapp && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>{formErrors.whatsapp}</span>}
+                      </div>
+                    )}
                   </div>
 
                   {/* Payment Method Tabs */}
@@ -352,16 +396,18 @@ export default function Services() {
                         <strong style={{ color: '#25D366', fontFamily: 'var(--font-mono)', fontSize: '0.95rem' }}>{bankDetails.accountNumber}</strong>
 
                         <span style={{ color: 'var(--text-muted)' }}>Payment Reference:</span>
-                        <strong style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>Your Full Name (e.g. {customerInfo.name || 'Ruwan Silva'})</strong>
+                        <strong style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>
+                          {customerInfo.name ? `${customerInfo.name} - ${customerInfo.phone || 'Phone'}` : 'Your Full Name & Phone Number (e.g. Ruwan Silva - 0771234567)'}
+                        </strong>
                       </div>
 
                       <div style={{ backgroundColor: 'rgba(6, 182, 212, 0.12)', borderLeft: '3px solid var(--accent-cyan)', padding: '0.6rem 0.85rem', borderRadius: '4px', fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: '1.25rem' }}>
-                        ⚠️ <strong>Important Note:</strong> Please type your <strong>Full Name</strong> in the Payment Reference / Remarks field when making the bank transfer or online deposit.
+                        ⚠️ <strong>Important Note:</strong> Please type your <strong>Full Name & Phone Number</strong> in the Payment Reference / Remarks field when making the bank transfer or online deposit.
                       </div>
 
                       {/* Mandatory YES Confirmation Field */}
                       <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                        <label className="form-label" htmlFor="confirm-yes">Type "YES" to confirm you added your Full Name as Payment Reference *</label>
+                        <label className="form-label" htmlFor="confirm-yes">Type "YES" to confirm you added your Full Name & Phone Number as Payment Reference *</label>
                         <input
                           type="text"
                           id="confirm-yes"
