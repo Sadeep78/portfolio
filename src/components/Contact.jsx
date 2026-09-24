@@ -14,11 +14,16 @@ export default function Contact() {
   const validate = () => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const nameRegex = /^[a-zA-Z\s\.\'-]+$/;
 
     if (!formData.name.trim()) {
       newErrors.name = 'Please enter your name.';
     } else if (formData.name.trim().length < 2) {
       newErrors.name = 'Name must be at least 2 characters long.';
+    } else if (/\d/.test(formData.name)) {
+      newErrors.name = 'Name cannot contain numbers. Please use letters only.';
+    } else if (!nameRegex.test(formData.name.trim())) {
+      newErrors.name = 'Name should only contain letters and spaces.';
     }
 
     if (!formData.email.trim()) {
