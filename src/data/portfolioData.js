@@ -27,7 +27,7 @@ export const portfolioData = {
   stats: [
     { label: "Degree & Specialization", value: "BSc (Hons) IT", accent: "Specialising in ISE" },
     { label: "Management Experience", value: "2+ Years", accent: "Project Manager & BA" },
-    { label: "Verified Certificates", value: "10 Documents", accent: "SLIIT, BCAS, UoM & Simplilearn" },
+    { label: "Verified Certificates", value: "11 Documents", accent: "SLIIT, IEEE, BCAS & UoM" },
     { label: "ML & Systems Accuracy", value: "83.64%", accent: "Tuned KNN (k=15)" }
   ],
 
@@ -51,6 +51,19 @@ export const portfolioData = {
   },
 
   certifications: [
+    {
+      id: "gitgenius-2026-ieee-sltc",
+      title: "GitGenius 2026 - Git & GitHub Workshop Series",
+      issuer: "IEEE Computer Society Student Branch Chapter of SLTC (in collaboration with Microsoft & GitHub)",
+      date: "Jul 4, 2026",
+      credentialId: "GitGenius-2026-SLTC",
+      verifyUrl: null,
+      pdfUrl: "/certificates/gitgenius-2026-sltc-ieee.jpg",
+      pdfUrlAlt: "/certificates/github-for-beginners-badge.png",
+      fileName: "GitGenius_2026_SLTC_IEEE_Certificate.jpg",
+      fileNameAlt: "GitHub_for_Beginners_Badge.png",
+      skills: ["Git", "GitHub Actions", "DevOps Workflows", "Azure Deployment", "Version Control"]
+    },
     {
       id: "bcas-law-hired-fired",
       title: 'From "Hired" to "Fired" - A Journey of Law',
