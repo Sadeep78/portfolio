@@ -9,6 +9,7 @@ export default function Services() {
   
   // Booking Form State
   const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', phone: '', message: '' });
+  const [confirmYes, setConfirmYes] = useState('');
   const [slipFile, setSlipFile] = useState(null);
   const [slipPreview, setSlipPreview] = useState(null);
   const [stripeCard, setStripeCard] = useState({ name: '', number: '', expiry: '', cvc: '' });
@@ -28,6 +29,7 @@ export default function Services() {
     setSlipFile(null);
     setSlipPreview(null);
     setCustomerInfo({ name: '', email: '', phone: '', message: '' });
+    setConfirmYes('');
     setFormErrors({});
     setBookingSubmitted(false);
   };
@@ -69,8 +71,13 @@ export default function Services() {
       errors.phone = 'Please enter your phone / WhatsApp number.';
     }
 
-    if (paymentMethod === 'bank' && !slipFile) {
-      errors.slip = 'Please upload your bank transfer deposit slip file.';
+    if (paymentMethod === 'bank') {
+      if (!slipFile) {
+        errors.slip = 'Please upload your bank transfer deposit slip file.';
+      }
+      if (!confirmYes.trim() || confirmYes.trim().toUpperCase() !== 'YES') {
+        errors.confirmYes = 'Please type YES to confirm you entered your Full Name as the Payment Reference / Remark.';
+      }
     }
 
     if (paymentMethod === 'stripe') {
@@ -350,6 +357,29 @@ export default function Services() {
 
                       <div style={{ backgroundColor: 'rgba(6, 182, 212, 0.12)', borderLeft: '3px solid var(--accent-cyan)', padding: '0.6rem 0.85rem', borderRadius: '4px', fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: '1.25rem' }}>
                         ⚠️ <strong>Important Note:</strong> Please type your <strong>Full Name</strong> in the Payment Reference / Remarks field when making the bank transfer or online deposit.
+                      </div>
+
+                      {/* Mandatory YES Confirmation Field */}
+                      <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                        <label className="form-label" htmlFor="confirm-yes">Type "YES" to confirm you added your Full Name as Payment Reference *</label>
+                        <input
+                          type="text"
+                          id="confirm-yes"
+                          placeholder='Type "YES" to confirm'
+                          className="form-input"
+                          style={formErrors.confirmYes ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' } : {}}
+                          value={confirmYes}
+                          onChange={(e) => {
+                            setConfirmYes(e.target.value);
+                            if (formErrors.confirmYes) setFormErrors({ ...formErrors, confirmYes: null });
+                          }}
+                        />
+                        {formErrors.confirmYes && (
+                          <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                            <AlertCircle size={14} />
+                            <span>{formErrors.confirmYes}</span>
+                          </span>
+                        )}
                       </div>
 
                       {/* Browse Slip File */}
