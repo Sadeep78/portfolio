@@ -1,22 +1,56 @@
 import React, { useState } from 'react';
-import { Mail, MapPin, PhoneCall, Send, CheckCircle2, MessageSquare, Linkedin, ExternalLink, Briefcase } from 'lucide-react';
+import { Mail, MapPin, PhoneCall, Send, CheckCircle2, MessageSquare, Linkedin, ExternalLink, Briefcase, AlertCircle } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
 
 export default function Contact() {
   const { personal } = portfolioData;
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const whatsappNumber = '94705922792'; // Sadeep's primary WhatsApp number (+94 70 592 2792)
 
+  const validate = () => {
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Please enter your name.';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Name must be at least 2 characters long.';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Please enter your email address.';
+    } else if (!emailRegex.test(formData.email.trim())) {
+      newErrors.email = 'Please enter a valid email address (e.g. sarah@company.com).';
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = 'Please enter contract details or a message.';
+    } else if (formData.message.trim().length < 5) {
+      newErrors.message = 'Message must be at least 5 characters long.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: null });
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) return;
+    if (!validate()) return;
 
     setLoading(true);
 
-    const formattedText = `Hello Sadeep,%0A%0AI found your portfolio site (https://sadeep.vercel.app) and would like to reach out regarding a contract / inquiry:%0A%0A👤 *Name:* ${encodeURIComponent(formData.name)}%0A📧 *Email:* ${encodeURIComponent(formData.email)}%0A💬 *Contract Details / Message:*%0A${encodeURIComponent(formData.message)}`;
+    const formattedText = `Hello Sadeep,%0A%0AI found your portfolio site (https://sadeep.vercel.app) and would like to reach out regarding a contract / inquiry:%0A%0A👤 *Name:* ${encodeURIComponent(formData.name.trim())}%0A📧 *Email:* ${encodeURIComponent(formData.email.trim())}%0A💬 *Contract Details / Message:*%0A${encodeURIComponent(formData.message.trim())}`;
 
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${formattedText}`;
 
@@ -25,6 +59,7 @@ export default function Contact() {
       setSubmitted(true);
       window.open(whatsappUrl, '_blank');
       setFormData({ name: '', email: '', message: '' });
+      setErrors({});
       setTimeout(() => setSubmitted(false), 7000);
     }, 500);
   };
@@ -138,44 +173,62 @@ export default function Contact() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
               <div className="form-group">
-                <label className="form-label" htmlFor="name">Your Name</label>
+                <label className="form-label" htmlFor="name">Your Name *</label>
                 <input
                   type="text"
                   id="name"
-                  required
                   placeholder="e.g. Sarah Jenkins"
                   className="form-input"
+                  style={errors.name ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' } : {}}
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
                 />
+                {errors.name && (
+                  <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <AlertCircle size={13} />
+                    <span>{errors.name}</span>
+                  </span>
+                )}
               </div>
 
               <div className="form-group">
-                <label className="form-label" htmlFor="email">Email Address</label>
+                <label className="form-label" htmlFor="email">Email Address *</label>
                 <input
                   type="email"
                   id="email"
-                  required
                   placeholder="e.g. sarah@company.com"
                   className="form-input"
+                  style={errors.email ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' } : {}}
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
                 />
+                {errors.email && (
+                  <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <AlertCircle size={13} />
+                    <span>{errors.email}</span>
+                  </span>
+                )}
               </div>
 
               <div className="form-group">
-                <label className="form-label" htmlFor="message">Contract Details / Message</label>
+                <label className="form-label" htmlFor="message">Contract Details / Message *</label>
                 <textarea
                   id="message"
-                  required
                   rows="5"
                   placeholder="Details regarding your project, contract terms, scope, or hiring inquiry..."
                   className="form-textarea"
+                  style={errors.message ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' } : {}}
                   value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  onChange={(e) => handleInputChange('message', e.target.value)}
                 ></textarea>
+                {errors.message && (
+                  <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <AlertCircle size={13} />
+                    <span>{errors.message}</span>
+                  </span>
+                )}
               </div>
 
               <button 
