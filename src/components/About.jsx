@@ -5,6 +5,14 @@ import CertificateModal from './CertificateModal';
 
 export default function About() {
   const { about, stats, certifications, organizations, languages } = portfolioData;
+  const [activeCert, setActiveCert] = useState(null);
+
+  const principleIcons = [
+    <Cpu size={24} key="cpu" />,
+    <LayoutGrid size={24} key="layout" />,
+    <ShieldCheck size={24} key="shield" />
+  ];
+
   const handleDownloadBoth = (e, cert) => {
     if (cert.pdfUrlAlt) {
       e.preventDefault();
