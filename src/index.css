@@ -1188,7 +1188,7 @@ ul {
 }
 
 /* ==========================================================================
-   RESPONSIVE BREAKPOINTS
+   RESPONSIVE BREAKPOINTS & MOBILE OPTIMIZATIONS
    ========================================================================== */
 
 @media (max-width: 1024px) {
@@ -1198,6 +1198,7 @@ ul {
 
   .executive-portrait-card {
     max-width: 320px;
+    margin: 0 auto;
   }
 
   .skills-grid, .projects-grid {
@@ -1214,27 +1215,77 @@ ul {
 }
 
 @media (max-width: 768px) {
+  .container {
+    padding: 0 1.25rem;
+  }
+
   .nav-links, .nav-actions .btn {
     display: none;
   }
 
   .mobile-toggle-btn {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .skills-grid, .projects-grid {
-    grid-template-columns: 1fr;
+  .skills-grid, .projects-grid, .certifications-grid {
+    grid-template-columns: 1fr !important;
   }
 
   .section {
-    padding: 4rem 0;
+    padding: 3.5rem 0;
+  }
+
+  .section-title {
+    font-size: 1.85rem;
   }
 
   .hero-title {
-    font-size: 2.25rem;
+    font-size: 2.1rem;
+    line-height: 1.25;
+  }
+
+  .hero-subtitle {
+    font-size: 0.98rem;
+  }
+
+  .hero-ctas {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-ctas .btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .modal-card {
+    width: 95% !important;
+    max-height: 92vh !important;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+  }
+
+  .stat-number {
+    font-size: 1.8rem !important;
   }
 }
