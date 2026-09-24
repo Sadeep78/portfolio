@@ -409,10 +409,28 @@ export const portfolioData = {
 
   organizations: [
     {
-      name: "IEEE Industry Applications Society & Student Branch of SLIIT",
-      role: "Member & Path to Internship '26 Participant",
+      name: "Leo Club of SLIIT",
+      role: "Club Member",
+      period: "Active Member",
+      description: "Actively participating in community service initiatives, leadership workshops, youth empowerment, and social impact projects at SLIIT."
+    },
+    {
+      name: "ISESC (Information Systems Engineering Student Community)",
+      role: "Volunteer Member",
+      period: "Active Member",
+      description: "Volunteering for Information Systems Engineering academic events, tech workshops, student mentoring, and industry networking programs."
+    },
+    {
+      name: "IEEE Industry Applications Society (IEEE IAS) & Student Branch of SLIIT",
+      role: "IEEE IAS Member & Path to Internship '26 Participant",
+      period: "2026 - Present",
+      description: "Engaged in professional development workshops, industrial engineering talks, CV techniques, and interactive roundtable sessions with tech leaders from WSO2, SoftSora, and Velaris."
+    },
+    {
+      name: "SLIIT Odyssey '26",
+      role: "Organizing Committee & Event Member",
       period: "2026",
-      description: "Engaged in professional development workshops, CV techniques, and interactive roundtable sessions with tech leaders from WSO2, SoftSora, and Velaris."
+      description: "Actively contributing to event management, coordination, logistical execution, and team leadership for the SLIIT Odyssey '26 flagship event."
     },
     {
       name: "Sasnaka Sansada",
