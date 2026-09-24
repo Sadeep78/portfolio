@@ -173,13 +173,9 @@ export default function Services() {
 
               {/* Price Breakdown Card */}
               <div style={{ background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', marginBottom: '1.5rem', border: '1px solid var(--border-color)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.35rem' }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Full Package Price:</span>
-                  <span style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)' }}>{service.fullPrice}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.35rem' }}>
-                  <span style={{ fontSize: '0.85rem', color: '#25D366', fontWeight: 600 }}>Advance to Book:</span>
-                  <span style={{ fontSize: '1rem', fontWeight: 700, color: '#25D366' }}>{service.advancePrice}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <span style={{ fontSize: '0.88rem', color: '#25D366', fontWeight: 700 }}>Advance Booking Fee:</span>
+                  <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#25D366' }}>{service.advancePrice}</span>
                 </div>
                 {service.id === 'fullstack-dev' && (
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', borderTop: '1px dashed var(--border-color)', paddingTop: '0.5rem', marginTop: '0.5rem' }}>
@@ -226,7 +222,7 @@ export default function Services() {
                 <span style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 700 }}>SERVICE BOOKING</span>
                 <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginTop: '0.2rem' }}>{selectedService.title}</h3>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-                  Advance Booking Fee: <strong style={{ color: '#25D366' }}>{selectedService.advancePrice}</strong> (Full Price: {selectedService.fullPrice})
+                  Advance Booking Fee: <strong style={{ color: '#25D366' }}>{selectedService.advancePrice}</strong>
                 </p>
               </div>
               <button className="modal-close-btn" onClick={handleCloseModal}>
