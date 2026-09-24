@@ -27,7 +27,7 @@ export const portfolioData = {
   stats: [
     { label: "Degree & Specialization", value: "BSc (Hons) IT", accent: "Specialising in ISE" },
     { label: "Management Experience", value: "2+ Years", accent: "Project Manager & BA" },
-    { label: "Verified Certificates", value: "8 Documents", accent: "SLIIT, UoM, Simplilearn & GDG" },
+    { label: "Verified Certificates", value: "10 Documents", accent: "SLIIT, BCAS, UoM & Simplilearn" },
     { label: "ML & Systems Accuracy", value: "83.64%", accent: "Tuned KNN (k=15)" }
   ],
 
@@ -51,6 +51,28 @@ export const portfolioData = {
   },
 
   certifications: [
+    {
+      id: "bcas-law-hired-fired",
+      title: 'From "Hired" to "Fired" - A Journey of Law',
+      issuer: "Faculty of Law, BCAS Campus (British College of Applied Studies)",
+      date: "Sep 22, 2026",
+      credentialId: "BCAS-LAW-2026",
+      verifyUrl: null,
+      pdfUrl: "/certificates/bcas-hired-to-fired-law.pdf",
+      fileName: "BCAS_Campus_Journey_of_Law_Certificate.pdf",
+      skills: ["Employment Law", "Labor Law & Regulations", "Legal Compliance", "HR Management"]
+    },
+    {
+      id: "bcas-ai-identity-deepfake",
+      title: "Your Voice, Face & Identity Can Now Be Faked",
+      issuer: "School of Computing, BCAS Campus (British College of Applied Studies)",
+      date: "Aug 19, 2026",
+      credentialId: "BCAS-IT-2026",
+      verifyUrl: null,
+      pdfUrl: "/certificates/bcas-ai-identity-faked.pdf",
+      fileName: "BCAS_Campus_AI_Deepfake_Identity_Certificate.pdf",
+      skills: ["AI Security", "Deepfake Awareness", "Digital Identity Protection", "Cybersecurity & Ethics"]
+    },
     {
       id: "aiml-stage-1-2",
       title: "AI/ML Engineer - Stage 1 & Stage 2",
