@@ -1,17 +1,41 @@
-import React from 'react';
-import { X, Download, ExternalLink, ShieldCheck } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Download, ExternalLink, ShieldCheck, FileText, Award, Layers } from 'lucide-react';
 
 export default function CertificateModal({ certificate, onClose }) {
   if (!certificate) return null;
 
-  const isImage = certificate.pdfUrl && (certificate.pdfUrl.endsWith('.png') || certificate.pdfUrl.endsWith('.jpg') || certificate.pdfUrl.endsWith('.jpeg'));
+  const [activeTab, setActiveTab] = useState('main'); // 'main' or 'alt'
+
+  const currentUrl = activeTab === 'main' ? certificate.pdfUrl : (certificate.pdfUrlAlt || certificate.pdfUrl);
+  const isImage = currentUrl && (currentUrl.endsWith('.png') || currentUrl.endsWith('.jpg') || currentUrl.endsWith('.jpeg'));
+
+  const handleDownloadBoth = () => {
+    // Helper function to trigger download for a URL
+    const triggerDownload = (url, fileName) => {
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    if (certificate.pdfUrl) {
+      triggerDownload(certificate.pdfUrl, certificate.fileName || `${certificate.title}`);
+    }
+    if (certificate.pdfUrlAlt) {
+      setTimeout(() => {
+        triggerDownload(certificate.pdfUrlAlt, certificate.fileNameAlt || `${certificate.title}_Stage1`);
+      }, 400);
+    }
+  };
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div 
         className="modal-card" 
         onClick={(e) => e.stopPropagation()} 
-        style={{ maxWidth: '920px', height: '88vh', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' }}
+        style={{ maxWidth: '960px', height: '90vh', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' }}
       >
         {/* Modal Header */}
         <div style={{ padding: '1.25rem 1.5rem', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
@@ -25,26 +49,26 @@ export default function CertificateModal({ certificate, onClose }) {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-            {certificate.pdfUrl && (
-              <a 
-                href={certificate.pdfUrl} 
-                download={certificate.fileName || `${certificate.title}`}
+            {certificate.pdfUrlAlt ? (
+              <button 
+                onClick={handleDownloadBoth}
                 className="btn btn-primary btn-sm"
+                title="Download Stage 1 & Stage 2 / Both Documents"
               >
                 <Download size={15} />
-                <span>{certificate.pdfUrlAlt ? 'Download Stage 2' : 'Download File'}</span>
-              </a>
-            )}
-
-            {certificate.pdfUrlAlt && (
-              <a 
-                href={certificate.pdfUrlAlt} 
-                download={certificate.fileNameAlt || `${certificate.title}_Stage1`}
-                className="btn btn-secondary btn-sm"
-              >
-                <Download size={15} />
-                <span>Download Stage 1</span>
-              </a>
+                <span>Download Both Files</span>
+              </button>
+            ) : (
+              certificate.pdfUrl && (
+                <a 
+                  href={certificate.pdfUrl} 
+                  download={certificate.fileName || `${certificate.title}`}
+                  className="btn btn-primary btn-sm"
+                >
+                  <Download size={15} />
+                  <span>Download File</span>
+                </a>
+              )
             )}
 
             <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
@@ -53,18 +77,46 @@ export default function CertificateModal({ certificate, onClose }) {
           </div>
         </div>
 
+        {/* Tab Switcher Bar (If Multiple Documents Exist) */}
+        {certificate.pdfUrlAlt && (
+          <div style={{ backgroundColor: 'var(--bg-tertiary)', borderBottom: '1px solid var(--border-color)', padding: '0.65rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'center' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <Layers size={14} style={{ color: 'var(--accent-cyan)' }} />
+              <span>Document View:</span>
+            </span>
+
+            <button
+              onClick={() => setActiveTab('main')}
+              className={`btn btn-sm ${activeTab === 'main' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ padding: '0.3rem 0.85rem', fontSize: '0.8rem' }}
+            >
+              <FileText size={14} />
+              <span>{certificate.id === 'gitgenius-2026-ieee-sltc' ? 'Workshop Certificate' : 'Stage 2 Certificate'}</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('alt')}
+              className={`btn btn-sm ${activeTab === 'alt' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ padding: '0.3rem 0.85rem', fontSize: '0.8rem' }}
+            >
+              <Award size={14} />
+              <span>{certificate.id === 'gitgenius-2026-ieee-sltc' ? 'GitHub Badge' : 'Stage 1 Certificate'}</span>
+            </button>
+          </div>
+        )}
+
         {/* Modal Body: PDF / Image Viewer */}
         <div style={{ flexGrow: 1, backgroundColor: '#070c18', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'auto', padding: isImage ? '1.5rem' : 0 }}>
-          {certificate.pdfUrl ? (
+          {currentUrl ? (
             isImage ? (
               <img 
-                src={certificate.pdfUrl} 
+                src={currentUrl} 
                 alt={certificate.title} 
                 style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.6)' }}
               />
             ) : (
               <iframe 
-                src={`${certificate.pdfUrl}#toolbar=0&navpanes=0`} 
+                src={`${currentUrl}#toolbar=0&navpanes=0`} 
                 title={certificate.title} 
                 style={{ width: '100%', height: '100%', border: 'none' }}
               />

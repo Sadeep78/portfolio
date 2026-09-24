@@ -139,19 +139,7 @@ export default function About() {
                         style={{ padding: '0.35rem 0.8rem', fontSize: '0.8rem' }}
                       >
                         <Download size={14} />
-                        <span>Download PDF</span>
-                      </a>
-                    )}
-
-                    {cert.pdfUrlAlt && (
-                      <a 
-                        href={cert.pdfUrlAlt}
-                        download={cert.fileNameAlt || `${cert.title}_Stage1.pdf`}
-                        className="btn btn-secondary btn-sm"
-                        style={{ padding: '0.35rem 0.8rem', fontSize: '0.8rem' }}
-                      >
-                        <Download size={14} />
-                        <span>Download Stage 1</span>
+                        <span>{cert.pdfUrlAlt ? 'Download Files' : 'Download PDF'}</span>
                       </a>
                     )}
 
