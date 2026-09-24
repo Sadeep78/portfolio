@@ -479,8 +479,8 @@ export const portfolioData = {
       description: "Custom web development built with React, Node.js or Java, and deployed live to Vercel/Netlify cloud platforms (Hosting purchase not included).",
       fullPrice: "LKR 12,000",
       advancePrice: "LKR 1,000",
-      remainingPrice: "LKR 11,000",
-      paymentTerms: "LKR 1,000 advance payment to confirm order booking. Remaining LKR 11,000 payable within 1 week of project delivery.",
+      remainingPrice: "Payable within 1 week of delivery",
+      paymentTerms: "LKR 1,000 advance payment to confirm order booking. Remaining balance payable within 1 week of project delivery.",
       features: [
         "Responsive Custom Web Application",
         "Frontend & Backend Integration",
