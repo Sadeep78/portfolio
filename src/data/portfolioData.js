@@ -459,5 +459,85 @@ export const portfolioData = {
       period: "Alumnus",
       details: "Galle, Southern Province, Sri Lanka."
     }
+  ],
+
+  bankDetails: {
+    accountName: "P.B Sadeep Sasanka",
+    bankName: "Commercial Bank",
+    branch: "Galle Fort",
+    accountNumber: "8016762707",
+    whatsappNumber: "94705922792"
+  },
+
+  services: [
+    {
+      id: "fullstack-dev",
+      title: "Full-Stack Web Development",
+      category: "Web & Software Engineering",
+      badge: "Most Popular",
+      description: "Custom web development built with React, Node.js or Java, and deployed live to Vercel/Netlify cloud platforms (Hosting purchase not included).",
+      fullPrice: "LKR 12,000",
+      advancePrice: "LKR 1,000",
+      remainingPrice: "LKR 11,000",
+      paymentTerms: "LKR 1,000 advance payment to confirm order booking. Remaining LKR 11,000 payable within 1 week of project delivery.",
+      features: [
+        "Responsive Custom Web Application",
+        "Frontend & Backend Integration",
+        "Vercel / Netlify Cloud Deployment",
+        "Source Code GitHub Repository Access",
+        "1-Week Free Post-Delivery Support"
+      ]
+    },
+    {
+      id: "project-management",
+      title: "Project Management & Agile Delivery",
+      category: "Management & Consulting",
+      badge: "Consulting",
+      description: "End-to-end SDLC project management, sprint planning, team leadership, risk assessment, and technical project delivery.",
+      fullPrice: "Contract Based",
+      advancePrice: "LKR 1,000",
+      remainingPrice: "As per Agreement",
+      paymentTerms: "LKR 1,000 advance booking fee to lock project management consultation.",
+      features: [
+        "Agile & Scrum Sprint Management",
+        "Team Leadership & Mentorship",
+        "Risk Assessment & Milestones Tracking",
+        "Stakeholder Progress Reports"
+      ]
+    },
+    {
+      id: "business-analysis",
+      title: "Business Analysis & Systems Architecture",
+      category: "Business & IT Consulting",
+      badge: "Architecture",
+      description: "Requirements gathering, business analysis, UML modeling (Use Case, Activity, Class & Sequence diagrams), and solution design.",
+      fullPrice: "Contract Based",
+      advancePrice: "LKR 1,000",
+      remainingPrice: "As per Agreement",
+      paymentTerms: "LKR 1,000 advance booking fee to initiate business requirements documentation.",
+      features: [
+        "Business Requirements Documentation (BRD)",
+        "UML Use Case, Activity & Sequence Diagrams",
+        "System Architecture & Flowcharts",
+        "Gap Analysis & Process Optimization"
+      ]
+    },
+    {
+      id: "web-design-leadership",
+      title: "Leadership Development & Web Design",
+      category: "UI/UX & Mentorship",
+      badge: "Design & Mentorship",
+      description: "Modern UI/UX web prototyping, clean executive design systems, team leadership coaching, and technical mentorship.",
+      fullPrice: "Contract Based",
+      advancePrice: "LKR 1,000",
+      remainingPrice: "As per Agreement",
+      paymentTerms: "LKR 1,000 advance booking fee for UI design prototypes & leadership coaching.",
+      features: [
+        "Modern Responsive UI/UX Designs",
+        "Executive Glassmorphism & Clean Layouts",
+        "Leadership Development & Coaching",
+        "Technical Mentorship & Code Reviews"
+      ]
+    }
   ]
 };
