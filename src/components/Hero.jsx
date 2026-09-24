@@ -7,10 +7,12 @@ export default function Hero() {
 
   const roles = [
     "Project Manager",
+    "Business Analyst",
+    "Enterprise Architect",
+    "Solution / System Architect",
     "Information Systems Engineer",
-    "AWS Cloud & DevOps Intern",
-    "Certified Agile Scrum Master",
-    "Full-Stack Developer"
+    "AWS Cloud & DevOps Specialist",
+    "Certified Agile Scrum Master"
   ];
 
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);

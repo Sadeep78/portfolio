@@ -1,7 +1,7 @@
 export const portfolioData = {
   personal: {
     name: "Sadeep Sasanka",
-    role: "Project Manager | Business Analyst | Information Systems Engineer",
+    role: "Project Manager | Business Analyst | Enterprise & Solution Architect | Information Systems Engineer",
     tagline: "Architecting Java Spring Boot Systems, AWS Cloud Infrastructure & Business Analysis",
     bio: "BSc (Hons) in Information Technology Specialising in Information Systems Engineering undergraduate at SLIIT with 2+ years of experience in Project Management, Business Analysis techniques, and software development. Proven track record leading agile project teams, conducting UML requirements modeling, managing cloud infrastructure at Decodelabs, and building enterprise web applications.",
     location: "Hapugala, Galle, Sri Lanka",
