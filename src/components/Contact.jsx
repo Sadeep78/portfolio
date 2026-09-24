@@ -8,17 +8,25 @@ export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const whatsappNumber = '94705922792'; // Sadeep's primary WhatsApp number (+94 70 592 2792)
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
 
     setLoading(true);
+
+    const formattedText = `Hello Sadeep,%0A%0AI found your portfolio site (https://sadeep.vercel.app) and would like to reach out regarding a contract / inquiry:%0A%0A👤 *Name:* ${encodeURIComponent(formData.name)}%0A📧 *Email:* ${encodeURIComponent(formData.email)}%0A💬 *Contract Details / Message:*%0A${encodeURIComponent(formData.message)}`;
+
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${formattedText}`;
+
     setTimeout(() => {
       setLoading(false);
       setSubmitted(true);
+      window.open(whatsappUrl, '_blank');
       setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setSubmitted(false), 5000);
-    }, 800);
+      setTimeout(() => setSubmitted(false), 7000);
+    }, 500);
   };
 
   return (
@@ -27,7 +35,7 @@ export default function Contact() {
         <div className="section-header">
           <div className="section-tag">Let's Connect & Collaborate</div>
           <h2 className="section-title">Contract & Professional Inquiries</h2>
-          <p className="section-subtitle">Looking for a Project Manager, Business Analyst, or Cloud Engineer for contract, consulting, or full-time roles? Reach out today!</p>
+          <p className="section-subtitle">Looking for a Project Manager, Business Analyst, or Cloud Engineer for contract, consulting, or full-time roles? Send a direct message to WhatsApp today!</p>
         </div>
 
         <div className="contact-container">
@@ -41,11 +49,29 @@ export default function Contact() {
               </p>
 
               <div className="contact-item">
+                <div className="contact-icon" style={{ backgroundColor: 'rgba(37, 211, 102, 0.15)', color: '#25D366' }}>
+                  <MessageSquare size={20} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>WhatsApp Direct</div>
+                  <a 
+                    href={`https://wa.me/${whatsappNumber}?text=Hi%20Sadeep,%20I%20would%20like%20to%20connect%20regarding%20a%20project/role.`} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    style={{ fontWeight: 600, color: '#25D366', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                  >
+                    <span>+94 70 592 2792</span>
+                    <ExternalLink size={14} />
+                  </a>
+                </div>
+              </div>
+
+              <div className="contact-item">
                 <div className="contact-icon">
                   <PhoneCall size={20} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Phone Number</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Phone Call</div>
                   <a href="tel:+94705922792" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
                     {personal.phone}
                   </a>
@@ -76,7 +102,7 @@ export default function Contact() {
                     rel="noreferrer" 
                     style={{ fontWeight: 600, color: 'var(--accent-cyan)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
                   >
-                    <span>linkedin.com/in/sadeep-sasanka-618a951b8</span>
+                    <span>linkedin.com/in/sadeep-sasanka</span>
                     <ExternalLink size={14} />
                   </a>
                 </div>
@@ -93,22 +119,22 @@ export default function Contact() {
               </div>
             </div>
 
-            <div style={{ padding: '1.25rem', borderRadius: 'var(--radius-md)', background: 'var(--accent-light)', border: '1px solid rgba(59, 130, 246, 0.25)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-cyan)', fontWeight: 700, marginBottom: '0.35rem' }}>
+            <div style={{ padding: '1.25rem', borderRadius: 'var(--radius-md)', background: 'rgba(37, 211, 102, 0.1)', border: '1px solid rgba(37, 211, 102, 0.3)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#25D366', fontWeight: 700, marginBottom: '0.35rem' }}>
                 <Briefcase size={18} />
                 <span>Open for Contract & Hiring</span>
               </div>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                Seeking Project Manager & Business Analyst contract roles. Direct response within 24 hours.
+                Submitting the form below will instantly format your contract details and send them directly to Sadeep's WhatsApp!
               </p>
             </div>
           </div>
 
           <div className="glass-card contact-form-card">
             {submitted && (
-              <div className="form-toast">
-                <CheckCircle2 size={20} style={{ display: 'inline', marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                Thank you! Your inquiry has been sent successfully.
+              <div className="form-toast" style={{ backgroundColor: 'rgba(37, 211, 102, 0.2)', borderColor: '#25D366', color: '#f8fafc' }}>
+                <CheckCircle2 size={20} style={{ display: 'inline', marginRight: '0.5rem', verticalAlign: 'middle', color: '#25D366' }} />
+                Redirecting to WhatsApp with your formatted contract message...
               </div>
             )}
 
@@ -145,20 +171,25 @@ export default function Contact() {
                   id="message"
                   required
                   rows="5"
-                  placeholder="Details regarding your project, contract terms, or hiring inquiry..."
+                  placeholder="Details regarding your project, contract terms, scope, or hiring inquiry..."
                   className="form-textarea"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 ></textarea>
               </div>
 
-              <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+              <button 
+                type="submit" 
+                className="btn btn-primary" 
+                style={{ width: '100%', backgroundColor: '#25D366', borderColor: '#25D366', color: '#070c18', fontWeight: 700 }} 
+                disabled={loading}
+              >
                 {loading ? (
-                  <span>Sending Inquiry...</span>
+                  <span>Opening WhatsApp...</span>
                 ) : (
                   <>
-                    <Send size={18} />
-                    <span>Send Inquiry</span>
+                    <MessageSquare size={18} />
+                    <span>Send Contract Inquiry to WhatsApp</span>
                   </>
                 )}
               </button>
