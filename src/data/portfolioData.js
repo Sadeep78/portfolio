@@ -466,6 +466,7 @@ export const portfolioData = {
     bankName: "Commercial Bank",
     branch: "Galle Fort",
     accountNumber: "8016762707",
+    paymentReference: "Customer's Full Name",
     whatsappNumber: "94705922792"
   },
 

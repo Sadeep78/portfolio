@@ -97,7 +97,7 @@ export default function Services() {
 
     let paymentMethodText = '';
     if (paymentMethod === 'bank') {
-      paymentMethodText = `🏦 *Payment Method:* Commercial Bank Slip Upload%0A📌 *Bank Details:* ${bankDetails.bankName} (${bankDetails.branch}) - Acc: ${bankDetails.accountNumber}%0A📎 *Slip File Attached:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
+      paymentMethodText = `🏦 *Payment Method:* Commercial Bank Slip Upload%0A📌 *Bank Details:* ${bankDetails.bankName} (${bankDetails.branch}) - Acc: ${bankDetails.accountNumber}%0A🏷️ *Payment Reference Used:* ${encodeURIComponent(customerInfo.name.trim())}%0A📎 *Slip File Attached:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
     } else {
       paymentMethodText = `💳 *Payment Method:* Stripe Credit/Debit Card (Advance Paid LKR 1,000)%0A🔒 *Cardholder Name:* ${encodeURIComponent(stripeCard.name)}`;
     }
@@ -331,7 +331,7 @@ export default function Services() {
                         <span>Commercial Bank Transfer Details:</span>
                       </div>
 
-                      <div style={{ fontSize: '0.85rem', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.4rem 1rem', marginBottom: '1.25rem', background: 'var(--bg-secondary)', padding: '0.85rem', borderRadius: 'var(--radius-sm)' }}>
+                      <div style={{ fontSize: '0.85rem', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.4rem 1rem', marginBottom: '1rem', background: 'var(--bg-secondary)', padding: '0.85rem', borderRadius: 'var(--radius-sm)' }}>
                         <span style={{ color: 'var(--text-muted)' }}>Account Name:</span>
                         <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.accountName}</strong>
 
@@ -343,6 +343,13 @@ export default function Services() {
 
                         <span style={{ color: 'var(--text-muted)' }}>Account No:</span>
                         <strong style={{ color: '#25D366', fontFamily: 'var(--font-mono)', fontSize: '0.95rem' }}>{bankDetails.accountNumber}</strong>
+
+                        <span style={{ color: 'var(--text-muted)' }}>Payment Reference:</span>
+                        <strong style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>Your Full Name (e.g. {customerInfo.name || 'Ruwan Silva'})</strong>
+                      </div>
+
+                      <div style={{ backgroundColor: 'rgba(6, 182, 212, 0.12)', borderLeft: '3px solid var(--accent-cyan)', padding: '0.6rem 0.85rem', borderRadius: '4px', fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: '1.25rem' }}>
+                        ⚠️ <strong>Important Note:</strong> Please type your <strong>Full Name</strong> in the Payment Reference / Remarks field when making the bank transfer or online deposit.
                       </div>
 
                       {/* Browse Slip File */}
