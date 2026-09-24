@@ -30,10 +30,10 @@ export default function App() {
       <Navbar theme={theme} toggleTheme={toggleTheme} />
       <main>
         <Hero />
+        <Services />
         <About />
         <Skills />
         <Projects />
-        <Services />
         <Experience />
         <Contact />
       </main>

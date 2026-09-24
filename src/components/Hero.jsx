@@ -67,8 +67,8 @@ export default function Hero() {
           </p>
 
           <div className="hero-ctas">
-            <a href="#projects" className="btn btn-primary">
-              <span>View Featured Projects</span>
+            <a href="#services" className="btn btn-primary shimmer-btn" style={{ backgroundColor: '#25D366', borderColor: '#25D366', color: '#070c18', fontWeight: 800 }}>
+              <span>Services & Booking</span>
               <ArrowRight size={18} />
             </a>
 
@@ -77,9 +77,8 @@ export default function Hero() {
               <span>Download CV</span>
             </a>
 
-            <a href="#contact" className="btn btn-secondary">
-              <Mail size={18} />
-              <span>Contact Me</span>
+            <a href="#projects" className="btn btn-secondary">
+              <span>View Projects</span>
             </a>
           </div>
 
