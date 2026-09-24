@@ -5,13 +5,24 @@ import CertificateModal from './CertificateModal';
 
 export default function About() {
   const { about, stats, certifications, organizations, languages } = portfolioData;
-  const [activeCert, setActiveCert] = useState(null);
+  const handleDownloadBoth = (e, cert) => {
+    if (cert.pdfUrlAlt) {
+      e.preventDefault();
+      const triggerDownload = (url, fileName) => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
 
-  const principleIcons = [
-    <Cpu size={24} key="cpu" />,
-    <LayoutGrid size={24} key="layout" />,
-    <ShieldCheck size={24} key="shield" />
-  ];
+      triggerDownload(cert.pdfUrl, cert.fileName || `${cert.title}`);
+      setTimeout(() => {
+        triggerDownload(cert.pdfUrlAlt, cert.fileNameAlt || `${cert.title}_Stage1`);
+      }, 400);
+    }
+  };
 
   return (
     <section className="section" id="about">
@@ -135,11 +146,12 @@ export default function About() {
                       <a 
                         href={cert.pdfUrl}
                         download={cert.fileName || `${cert.title}.pdf`}
+                        onClick={(e) => handleDownloadBoth(e, cert)}
                         className="btn btn-primary btn-sm"
                         style={{ padding: '0.35rem 0.8rem', fontSize: '0.8rem' }}
                       >
                         <Download size={14} />
-                        <span>{cert.pdfUrlAlt ? 'Download Files' : 'Download PDF'}</span>
+                        <span>{cert.pdfUrlAlt ? 'Download Both Files' : 'Download PDF'}</span>
                       </a>
                     )}
 
