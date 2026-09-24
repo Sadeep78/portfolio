@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { CheckCircle2, CreditCard, Upload, Send, MessageSquare, ArrowRight, X, ShieldCheck, FileText, Building2, HelpCircle, Check, AlertCircle, Phone, Smartphone } from 'lucide-react';
+import { CheckCircle2, Upload, Send, MessageSquare, ArrowRight, X, ShieldCheck, FileText, Building2, Check, AlertCircle, Phone } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
 
 export default function Services() {
   const { services, bankDetails } = portfolioData;
   const [selectedService, setSelectedService] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('bank'); // 'bank' or 'stripe'
   
   // Booking Form State
   const [customerInfo, setCustomerInfo] = useState({ 
@@ -19,7 +18,6 @@ export default function Services() {
   const [confirmYes, setConfirmYes] = useState('');
   const [slipFile, setSlipFile] = useState(null);
   const [slipPreview, setSlipPreview] = useState(null);
-  const [stripeCard, setStripeCard] = useState({ name: '', number: '', expiry: '', cvc: '' });
 
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -82,20 +80,12 @@ export default function Services() {
       errors.whatsapp = 'Please enter your separate WhatsApp number.';
     }
 
-    if (paymentMethod === 'bank') {
-      if (!slipFile) {
-        errors.slip = 'Please upload your bank transfer deposit slip file.';
-      }
-      if (!confirmYes.trim() || confirmYes.trim().toUpperCase() !== 'YES') {
-        errors.confirmYes = 'Please type YES to confirm you entered your Full Name & Phone Number as the Payment Reference.';
-      }
+    if (!slipFile) {
+      errors.slip = 'Please upload your bank transfer deposit slip file.';
     }
 
-    if (paymentMethod === 'stripe') {
-      if (!stripeCard.name.trim()) errors.stripeName = 'Cardholder name is required.';
-      if (!stripeCard.number.trim() || stripeCard.number.length < 15) errors.stripeNumber = 'Valid 16-digit card number required.';
-      if (!stripeCard.expiry.trim()) errors.stripeExpiry = 'Expiry date required (MM/YY).';
-      if (!stripeCard.cvc.trim()) errors.stripeCvc = 'CVC required.';
+    if (!confirmYes.trim() || confirmYes.trim().toUpperCase() !== 'YES') {
+      errors.confirmYes = 'Please type YES to confirm you entered your Full Name & Phone Number as the Payment Reference.';
     }
 
     setFormErrors(errors);
@@ -117,12 +107,7 @@ export default function Services() {
     const activeWhatsApp = customerInfo.sameAsPhone ? activePhone : customerInfo.whatsapp.trim();
     const activeReference = `${customerInfo.name.trim()} (${activePhone})`;
 
-    let paymentMethodText = '';
-    if (paymentMethod === 'bank') {
-      paymentMethodText = `🏦 *Payment Method:* Commercial Bank Slip Upload%0A📌 *Bank Details:* ${bankDetails.bankName} (${bankDetails.branch}) - Acc: ${bankDetails.accountNumber}%0A🏷️ *Payment Reference Used:* ${encodeURIComponent(activeReference)}%0A📎 *Slip File Attached:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
-    } else {
-      paymentMethodText = `💳 *Payment Method:* Stripe Credit/Debit Card (Advance Paid LKR 1,000)%0A🔒 *Cardholder Name:* ${encodeURIComponent(stripeCard.name)}`;
-    }
+    const paymentMethodText = `🏦 *Payment Method:* Commercial Bank Slip Upload%0A📌 *Bank Details:* ${bankDetails.bankName} (${bankDetails.branch}) - Acc: ${bankDetails.accountNumber}%0A🏷️ *Payment Reference Used:* ${encodeURIComponent(activeReference)}%0A📎 *Slip File Attached:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
 
     const whatsappMessage = `Hello Sadeep,%0A%0AI have booked a service on your portfolio website and submitted my advance payment details:%0A%0A🎯 *Service Booked:* ${encodeURIComponent(serviceTitle)}%0A💰 *Advance Fee Paid:* ${encodeURIComponent(advanceFee)}%0A💵 *Full Service Price:* ${encodeURIComponent(fullPrice)}%0A⏳ *Remaining Balance:* ${encodeURIComponent(remainingFee)} (Payable within 1 week of delivery)%0A%0A👤 *Customer Name:* ${encodeURIComponent(customerInfo.name.trim())}%0A📧 *Email:* ${encodeURIComponent(customerInfo.email.trim())}%0A📞 *Contact Phone:* ${encodeURIComponent(activePhone)}%0A💬 *WhatsApp Number:* ${encodeURIComponent(activeWhatsApp)}%0A💬 *Additional Notes:* ${encodeURIComponent(customerInfo.message.trim() || 'N/A')}%0A%0A${paymentMethodText}%0A%0APlease verify and confirm my booking request. Thank you!`;
 
@@ -318,211 +303,95 @@ export default function Services() {
                     )}
                   </div>
 
-                  {/* Payment Method Tabs */}
+                  {/* Commercial Bank Transfer Details Section */}
                   <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Building2 size={18} style={{ color: 'var(--accent-cyan)' }} />
-                    <span>2. Select Advance Payment Method (LKR 1,000)</span>
+                    <Building2 size={18} style={{ color: '#25D366' }} />
+                    <span>2. Commercial Bank Deposit & Slip Upload</span>
                   </h4>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.25rem' }}>
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('bank')}
-                      style={{
-                        padding: '0.85rem',
-                        borderRadius: 'var(--radius-md)',
-                        border: paymentMethod === 'bank' ? '2px solid #25D366' : '1px solid var(--border-color)',
-                        background: paymentMethod === 'bank' ? 'rgba(37, 211, 102, 0.12)' : 'var(--bg-tertiary)',
-                        color: paymentMethod === 'bank' ? '#25D366' : 'var(--text-secondary)',
-                        fontWeight: 700,
-                        fontSize: '0.88rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justify: 'center',
-                        gap: '0.5rem'
-                      }}
-                    >
-                      <Building2 size={18} />
-                      <span>Commercial Bank Slip</span>
-                    </button>
+                  <div style={{ background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--border-color)', marginBottom: '1.5rem' }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#25D366', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <Building2 size={16} />
+                      <span>Commercial Bank Transfer Details:</span>
+                    </div>
 
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('stripe')}
-                      style={{
-                        padding: '0.85rem',
-                        borderRadius: 'var(--radius-md)',
-                        border: paymentMethod === 'stripe' ? '2px solid var(--accent-primary)' : '1px solid var(--border-color)',
-                        background: paymentMethod === 'stripe' ? 'rgba(59, 130, 246, 0.12)' : 'var(--bg-tertiary)',
-                        color: paymentMethod === 'stripe' ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                        fontWeight: 700,
-                        fontSize: '0.88rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justify: 'center',
-                        gap: '0.5rem'
-                      }}
-                    >
-                      <CreditCard size={18} />
-                      <span>Pay via Stripe</span>
-                    </button>
-                  </div>
+                    <div style={{ fontSize: '0.85rem', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.4rem 1rem', marginBottom: '1rem', background: 'var(--bg-secondary)', padding: '0.85rem', borderRadius: 'var(--radius-sm)' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Account Name:</span>
+                      <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.accountName}</strong>
 
-                  {/* Payment Method 1: Bank Transfer Slip Upload */}
-                  {paymentMethod === 'bank' ? (
-                    <div style={{ background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--border-color)', marginBottom: '1.5rem' }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#25D366', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <Building2 size={16} />
-                        <span>Commercial Bank Transfer Details:</span>
-                      </div>
+                      <span style={{ color: 'var(--text-muted)' }}>Bank:</span>
+                      <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.bankName}</strong>
 
-                      <div style={{ fontSize: '0.85rem', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.4rem 1rem', marginBottom: '1rem', background: 'var(--bg-secondary)', padding: '0.85rem', borderRadius: 'var(--radius-sm)' }}>
-                        <span style={{ color: 'var(--text-muted)' }}>Account Name:</span>
-                        <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.accountName}</strong>
+                      <span style={{ color: 'var(--text-muted)' }}>Branch:</span>
+                      <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.branch}</strong>
 
-                        <span style={{ color: 'var(--text-muted)' }}>Bank:</span>
-                        <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.bankName}</strong>
+                      <span style={{ color: 'var(--text-muted)' }}>Account No:</span>
+                      <strong style={{ color: '#25D366', fontFamily: 'var(--font-mono)', fontSize: '0.95rem' }}>{bankDetails.accountNumber}</strong>
 
-                        <span style={{ color: 'var(--text-muted)' }}>Branch:</span>
-                        <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.branch}</strong>
+                      <span style={{ color: 'var(--text-muted)' }}>Payment Reference:</span>
+                      <strong style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>
+                        {customerInfo.name ? `${customerInfo.name} - ${customerInfo.phone || 'Phone'}` : 'Your Full Name & Phone Number (e.g. Ruwan Silva - 0771234567)'}
+                      </strong>
+                    </div>
 
-                        <span style={{ color: 'var(--text-muted)' }}>Account No:</span>
-                        <strong style={{ color: '#25D366', fontFamily: 'var(--font-mono)', fontSize: '0.95rem' }}>{bankDetails.accountNumber}</strong>
+                    <div style={{ backgroundColor: 'rgba(6, 182, 212, 0.12)', borderLeft: '3px solid var(--accent-cyan)', padding: '0.6rem 0.85rem', borderRadius: '4px', fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: '1.25rem' }}>
+                      ⚠️ <strong>Important Note:</strong> Please type your <strong>Full Name & Phone Number</strong> in the Payment Reference / Remarks field when making the bank transfer or online deposit.
+                    </div>
 
-                        <span style={{ color: 'var(--text-muted)' }}>Payment Reference:</span>
-                        <strong style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>
-                          {customerInfo.name ? `${customerInfo.name} - ${customerInfo.phone || 'Phone'}` : 'Your Full Name & Phone Number (e.g. Ruwan Silva - 0771234567)'}
-                        </strong>
-                      </div>
-
-                      <div style={{ backgroundColor: 'rgba(6, 182, 212, 0.12)', borderLeft: '3px solid var(--accent-cyan)', padding: '0.6rem 0.85rem', borderRadius: '4px', fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: '1.25rem' }}>
-                        ⚠️ <strong>Important Note:</strong> Please type your <strong>Full Name & Phone Number</strong> in the Payment Reference / Remarks field when making the bank transfer or online deposit.
-                      </div>
-
-                      {/* Mandatory YES Confirmation Field */}
-                      <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                        <label className="form-label" htmlFor="confirm-yes">Type "YES" to confirm you added your Full Name & Phone Number as Payment Reference *</label>
-                        <input
-                          type="text"
-                          id="confirm-yes"
-                          placeholder='Type "YES" to confirm'
-                          className="form-input"
-                          style={formErrors.confirmYes ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' } : {}}
-                          value={confirmYes}
-                          onChange={(e) => {
-                            setConfirmYes(e.target.value);
-                            if (formErrors.confirmYes) setFormErrors({ ...formErrors, confirmYes: null });
-                          }}
-                        />
-                        {formErrors.confirmYes && (
-                          <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                            <AlertCircle size={14} />
-                            <span>{formErrors.confirmYes}</span>
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Browse Slip File */}
-                      <label className="form-label" style={{ marginBottom: '0.5rem' }}>Upload Bank Deposit / Transfer Slip (Image or PDF) *</label>
-                      <div style={{ border: formErrors.slip ? '2px dashed #ef4444' : '2px dashed var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1.25rem', textAlign: 'center', background: 'var(--bg-secondary)', cursor: 'pointer' }}>
-                        <input 
-                          type="file" 
-                          accept="image/*,.pdf"
-                          onChange={handleFileChange}
-                          style={{ display: 'none' }}
-                          id="slip-upload-input"
-                        />
-                        <label htmlFor="slip-upload-input" style={{ cursor: 'pointer', display: 'block' }}>
-                          <Upload size={28} style={{ color: 'var(--accent-cyan)', margin: '0 auto 0.5rem auto' }} />
-                          <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
-                            {slipFile ? slipFile.name : 'Click here to Browse & Upload Payment Slip from PC'}
-                          </div>
-                          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                            Supports JPG, PNG, WEBP, or PDF
-                          </div>
-                        </label>
-                      </div>
-
-                      {formErrors.slip && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.35rem', display: 'block' }}>{formErrors.slip}</span>}
-
-                      {/* Slip Preview */}
-                      {slipPreview && (
-                        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>Uploaded Slip Image Preview:</span>
-                          <img src={slipPreview} alt="Payment Slip" style={{ maxHeight: '140px', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
-                        </div>
+                    {/* Mandatory YES Confirmation Field */}
+                    <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                      <label className="form-label" htmlFor="confirm-yes">Type "YES" to confirm you added your Full Name & Phone Number as Payment Reference *</label>
+                      <input
+                        type="text"
+                        id="confirm-yes"
+                        placeholder='Type "YES" to confirm'
+                        className="form-input"
+                        style={formErrors.confirmYes ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' } : {}}
+                        value={confirmYes}
+                        onChange={(e) => {
+                          setConfirmYes(e.target.value);
+                          if (formErrors.confirmYes) setFormErrors({ ...formErrors, confirmYes: null });
+                        }}
+                      />
+                      {formErrors.confirmYes && (
+                        <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                          <AlertCircle size={14} />
+                          <span>{formErrors.confirmYes}</span>
+                        </span>
                       )}
                     </div>
-                  ) : (
-                    /* Payment Method 2: Stripe Credit Card */
-                    <div style={{ background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--border-color)', marginBottom: '1.5rem' }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-primary)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <CreditCard size={16} />
-                        <span>Stripe Card Payment (LKR 1,000 Advance)</span>
-                      </div>
 
-                      <div className="form-group" style={{ marginBottom: '0.85rem' }}>
-                        <label className="form-label">Cardholder Name *</label>
-                        <input 
-                          type="text" 
-                          placeholder="Name as printed on card" 
-                          className="form-input"
-                          style={formErrors.stripeName ? { borderColor: '#ef4444' } : {}}
-                          value={stripeCard.name}
-                          onChange={(e) => setStripeCard({ ...stripeCard, name: e.target.value })}
-                        />
-                        {formErrors.stripeName && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.2rem', display: 'block' }}>{formErrors.stripeName}</span>}
-                      </div>
-
-                      <div className="form-group" style={{ marginBottom: '0.85rem' }}>
-                        <label className="form-label">Card Number *</label>
-                        <input 
-                          type="text" 
-                          placeholder="1234 5678 9012 3456" 
-                          className="form-input"
-                          style={formErrors.stripeNumber ? { borderColor: '#ef4444' } : {}}
-                          value={stripeCard.number}
-                          onChange={(e) => setStripeCard({ ...stripeCard, number: e.target.value })}
-                        />
-                        {formErrors.stripeNumber && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.2rem', display: 'block' }}>{formErrors.stripeNumber}</span>}
-                      </div>
-
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
-                        <div className="form-group" style={{ marginBottom: 0 }}>
-                          <label className="form-label">Expiry Date *</label>
-                          <input 
-                            type="text" 
-                            placeholder="MM / YY" 
-                            className="form-input"
-                            style={formErrors.stripeExpiry ? { borderColor: '#ef4444' } : {}}
-                            value={stripeCard.expiry}
-                            onChange={(e) => setStripeCard({ ...stripeCard, expiry: e.target.value })}
-                          />
-                          {formErrors.stripeExpiry && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.2rem', display: 'block' }}>{formErrors.stripeExpiry}</span>}
+                    {/* Browse Slip File */}
+                    <label className="form-label" style={{ marginBottom: '0.5rem' }}>Upload Bank Deposit / Transfer Slip (Image or PDF) *</label>
+                    <div style={{ border: formErrors.slip ? '2px dashed #ef4444' : '2px dashed var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1.25rem', textAlign: 'center', background: 'var(--bg-secondary)', cursor: 'pointer' }}>
+                      <input 
+                        type="file" 
+                        accept="image/*,.pdf"
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                        id="slip-upload-input"
+                      />
+                      <label htmlFor="slip-upload-input" style={{ cursor: 'pointer', display: 'block' }}>
+                        <Upload size={28} style={{ color: 'var(--accent-cyan)', margin: '0 auto 0.5rem auto' }} />
+                        <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                          {slipFile ? slipFile.name : 'Click here to Browse & Upload Payment Slip from PC'}
                         </div>
-
-                        <div className="form-group" style={{ marginBottom: 0 }}>
-                          <label className="form-label">CVC / CVV *</label>
-                          <input 
-                            type="text" 
-                            placeholder="123" 
-                            className="form-input"
-                            style={formErrors.stripeCvc ? { borderColor: '#ef4444' } : {}}
-                            value={stripeCard.cvc}
-                            onChange={(e) => setStripeCard({ ...stripeCard, cvc: e.target.value })}
-                          />
-                          {formErrors.stripeCvc && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.2rem', display: 'block' }}>{formErrors.stripeCvc}</span>}
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                          Supports JPG, PNG, WEBP, or PDF
                         </div>
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '1rem' }}>
-                        <ShieldCheck size={15} style={{ color: '#25D366' }} />
-                        <span>Secured by Stripe 256-bit SSL Payment Gateway</span>
-                      </div>
+                      </label>
                     </div>
-                  )}
+
+                    {formErrors.slip && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.35rem', display: 'block' }}>{formErrors.slip}</span>}
+
+                    {/* Slip Preview */}
+                    {slipPreview && (
+                      <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>Uploaded Slip Image Preview:</span>
+                        <img src={slipPreview} alt="Payment Slip" style={{ maxHeight: '140px', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
+                      </div>
+                    )}
+                  </div>
 
                   {/* Submit Booking Button */}
                   <button 
