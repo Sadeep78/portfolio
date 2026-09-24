@@ -3,7 +3,7 @@ export const portfolioData = {
     name: "Sadeep Sasanka",
     role: "Project Manager | Business Analyst | Enterprise & Solution Architect | Information Systems Engineer",
     tagline: "Architecting Java Spring Boot Systems, AWS Cloud Infrastructure & Business Analysis",
-    bio: "BSc (Hons) in Information Technology Specialising in Information Systems Engineering undergraduate at SLIIT with 2+ years of experience in Project Management, Business Analysis techniques, and software development. Proven track record leading agile project teams, conducting UML requirements modeling, managing cloud infrastructure at Decodelabs, and building enterprise web applications.",
+    bio: "BSc (Hons) in Information Technology Specialising in Information Systems Engineering undergraduate at SLIIT with 3+ years of experience in Project Management, Business Analysis techniques, and software development. Proven track record leading agile project teams, conducting UML requirements modeling, managing cloud infrastructure at Decodelabs, and building enterprise web applications.",
     location: "Hapugala, Galle, Sri Lanka",
     email: "sasankasadeep78@gmail.com",
     phone: "+94 70 592 2792",
@@ -26,7 +26,7 @@ export const portfolioData = {
 
   stats: [
     { label: "Degree & Specialization", value: "BSc (Hons) IT", accent: "Specialising in ISE" },
-    { label: "Management Experience", value: "2+ Years", accent: "Project Manager & BA" },
+    { label: "Management Experience", value: "3+ Years", accent: "Project Manager & BA" },
     { label: "Verified Certificates", value: "11 Documents", accent: "SLIIT, IEEE, BCAS & UoM" },
     { label: "ML & Systems Accuracy", value: "83.64%", accent: "Tuned KNN (k=15)" }
   ],
@@ -433,7 +433,7 @@ export const portfolioData = {
       institution: "SLIIT (Sri Lanka Institute of Information Technology)",
       degree: "BSc (Hons) in Information Technology Specialising in Information Systems Engineering",
       period: "Current",
-      details: "Specializing in Information Systems Engineering, Business Analysis, Systems Architecture, and Project Management. 2+ years of hands-on project management & business analysis experience."
+      details: "Specializing in Information Systems Engineering, Business Analysis, Systems Architecture, and Project Management. 3+ years of hands-on project management & business analysis experience."
     },
     {
       institution: "St. Aloysius' College",
