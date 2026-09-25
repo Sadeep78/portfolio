@@ -1,6 +1,29 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Upload, Send, MessageSquare, ArrowRight, X, ShieldCheck, FileText, Building2, Check, AlertCircle, Phone, Globe } from 'lucide-react';
+import { CheckCircle2, Upload, Send, MessageSquare, ArrowRight, X, ShieldCheck, FileText, Building2, Check, AlertCircle, Phone, Globe, Copy } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
+
+export const countryPhoneRules = {
+  '+94': { name: 'Sri Lanka', digits: [9], example: '705922792', autoStripZero: true },
+  '+1': { name: 'USA / Canada', digits: [10], example: '2025550143' },
+  '+44': { name: 'UK', digits: [10], example: '7911123456', autoStripZero: true },
+  '+61': { name: 'Australia', digits: [9], example: '412345678', autoStripZero: true },
+  '+91': { name: 'India', digits: [10], example: '9876543210' },
+  '+971': { name: 'UAE', digits: [9], example: '501234567', autoStripZero: true },
+  '+65': { name: 'Singapore', digits: [8], example: '81234567' },
+  '+974': { name: 'Qatar', digits: [8], example: '55123456' },
+  '+60': { name: 'Malaysia', digits: [9, 10], example: '123456789' },
+  '+64': { name: 'New Zealand', digits: [8, 9], example: '211234567' },
+  '+49': { name: 'Germany', digits: [10, 11], example: '15112345678' },
+  '+33': { name: 'France', digits: [9], example: '612345678', autoStripZero: true },
+  '+81': { name: 'Japan', digits: [10], example: '9012345678' },
+  '+82': { name: 'South Korea', digits: [9, 10], example: '1012345678' },
+  '+966': { name: 'Saudi Arabia', digits: [9], example: '501234567' },
+  '+968': { name: 'Oman', digits: [8], example: '91234567' },
+  '+965': { name: 'Kuwait', digits: [8], example: '91234567' },
+  '+973': { name: 'Bahrain', digits: [8], example: '31234567' },
+  '+39': { name: 'Italy', digits: [10], example: '3123456789' },
+  '+86': { name: 'China', digits: [11], example: '13800138000' }
+};
 
 export const countryCodes = [
   { code: '+94', country: 'Sri Lanka (+94)', flag: '🇱🇰' },
@@ -25,6 +48,28 @@ export const countryCodes = [
   { code: '+86', country: 'China (+86)', flag: '🇨🇳' }
 ];
 
+export const validatePhoneByCountry = (code, rawNumber) => {
+  if (!rawNumber || !rawNumber.trim()) return 'Please enter your phone number.';
+  
+  let clean = rawNumber.replace(/[\s\-\(\)]/g, '');
+  const rule = countryPhoneRules[code] || { name: 'Country', digits: [7, 8, 9, 10, 11, 12], example: '705922792' };
+
+  if (rule.autoStripZero && clean.startsWith('0')) {
+    clean = clean.substring(1);
+  }
+
+  if (!/^\d+$/.test(clean)) return 'Phone number must contain digits only.';
+
+  const validLengths = rule.digits;
+  if (!validLengths.includes(clean.length)) {
+    if (code === '+94') {
+      return `Sri Lanka (+94) numbers must be exactly 9 digits (e.g. 705922792). You typed ${clean.length} digits.`;
+    }
+    return `${rule.name} (${code}) numbers must be ${validLengths.join(' or ')} digits (e.g. ${rule.example}). You typed ${clean.length} digits.`;
+  }
+  return null;
+};
+
 export default function Services() {
   const { services, bankDetails } = portfolioData;
   const [selectedService, setSelectedService] = useState(null);
@@ -48,6 +93,7 @@ export default function Services() {
   const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
   const [bookingSubmitted, setBookingSubmitted] = useState(false);
+  const [copiedRef, setCopiedRef] = useState(false);
 
   // Real-time Single Field Validation
   const validateField = (fieldName, fieldValue, currentInfo = customerInfo, currentYes = confirmYes, currentSlip = slipFile) => {
@@ -56,41 +102,38 @@ export default function Services() {
 
     if (fieldName === 'name') {
       if (!fieldValue || !fieldValue.trim()) return 'Please enter your full name.';
-      if (fieldValue.trim().length < 2) return 'Name must be at least 2 characters long.';
-      if (/\d/.test(fieldValue)) return 'Name cannot contain numbers. Please use letters only.';
-      if (!nameRegex.test(fieldValue.trim())) return 'Name should contain letters and spaces only.';
+      const trimmed = fieldValue.trim();
+      const words = trimmed.split(/\s+/).filter(Boolean);
+      if (words.length < 2) {
+        return 'Please enter both First Name and Last Name with a space (e.g. Ruwan Silva).';
+      }
+      if (/\d/.test(trimmed)) return 'Name cannot contain numbers. Please use letters only.';
+      if (!nameRegex.test(trimmed)) return 'Name should contain letters and spaces only.';
       return null;
     }
 
     if (fieldName === 'email') {
       if (!fieldValue || !fieldValue.trim()) return 'Please enter your email address.';
       if (!emailRegex.test(fieldValue.trim())) {
-        return 'Please enter a complete email address (e.g. name@gmail.com, name@outlook.com).';
+        return 'Please enter a complete email address (e.g. ruwan@gmail.com).';
       }
       return null;
     }
 
     if (fieldName === 'phone') {
-      const clean = (fieldValue || '').replace(/[\s\-\(\)]/g, '');
-      if (!clean) return 'Please enter your contact phone number.';
-      if (!/^\d+$/.test(clean)) return 'Phone number must contain digits only.';
-      if (clean.length < 7 || clean.length > 12) return 'Phone number must be between 7 and 12 digits.';
-      return null;
+      return validatePhoneByCountry(currentInfo.countryCode, fieldValue);
     }
 
     if (fieldName === 'whatsapp') {
       if (!currentInfo.sameAsPhone) {
-        const clean = (fieldValue || '').replace(/[\s\-\(\)]/g, '');
-        if (!clean) return 'Please enter your separate WhatsApp number.';
-        if (!/^\d+$/.test(clean)) return 'WhatsApp number must contain digits only.';
-        if (clean.length < 7 || clean.length > 12) return 'WhatsApp number must be between 7 and 12 digits.';
+        return validatePhoneByCountry(currentInfo.whatsappCountryCode, fieldValue);
       }
       return null;
     }
 
     if (fieldName === 'confirmYes') {
       if (!fieldValue || !fieldValue.trim() || fieldValue.trim().toUpperCase() !== 'YES') {
-        return 'Please type "YES" to confirm you added your Full Name & Phone Number as Payment Reference.';
+        return 'Please type "YES" to confirm you added Payment Reference.';
       }
       return null;
     }
@@ -391,7 +434,7 @@ export default function Services() {
                       <input 
                         type="email" 
                         inputMode="email"
-                        placeholder="e.g. ruwan@gmail.com, ruwan@outlook.com" 
+                        placeholder="e.g. ruwan@gmail.com" 
                         className="form-input"
                         style={
                           touched.email && formErrors.email
@@ -450,7 +493,7 @@ export default function Services() {
                       <input 
                         type="tel" 
                         inputMode="tel"
-                        placeholder="e.g. 771234567" 
+                        placeholder="e.g. 705922792" 
                         className="form-input"
                         style={{
                           flexGrow: 1,
@@ -517,7 +560,7 @@ export default function Services() {
                           <input 
                             type="tel" 
                             inputMode="tel"
-                            placeholder="e.g. 709876543" 
+                            placeholder="e.g. 705922792" 
                             className="form-input"
                             style={{
                               flexGrow: 1,
@@ -558,7 +601,7 @@ export default function Services() {
                       <span>Commercial Bank Transfer Details:</span>
                     </div>
 
-                    <div style={{ fontSize: '0.85rem', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.4rem 1rem', marginBottom: '1rem', background: 'var(--bg-secondary)', padding: '0.85rem', borderRadius: 'var(--radius-sm)' }}>
+                    <div style={{ fontSize: '0.85rem', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.5rem 1rem', marginBottom: '1rem', background: 'var(--bg-secondary)', padding: '0.85rem', borderRadius: 'var(--radius-sm)', alignItems: 'center' }}>
                       <span style={{ color: 'var(--text-muted)' }}>Account Name:</span>
                       <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.accountName}</strong>
 
@@ -572,9 +615,50 @@ export default function Services() {
                       <strong style={{ color: '#25D366', fontFamily: 'var(--font-mono)', fontSize: '0.95rem' }}>{bankDetails.accountNumber}</strong>
 
                       <span style={{ color: 'var(--text-muted)' }}>Payment Reference:</span>
-                      <strong style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>
-                        {customerInfo.name ? `${customerInfo.name} - ${customerInfo.countryCode} ${customerInfo.phone || 'Phone'}` : 'Your Full Name & Phone Number (e.g. Ruwan Silva - +94 771234567)'}
-                      </strong>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <strong style={{ color: 'var(--accent-cyan)', fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}>
+                          "{customerInfo.name.trim() && customerInfo.phone.trim() 
+                            ? `${customerInfo.name.trim()},${customerInfo.countryCode}${customerInfo.phone.trim().replace(/^0/, '')}`
+                            : 'Sadeep,+94705922792'}"
+                        </strong>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const refToCopy = customerInfo.name.trim() && customerInfo.phone.trim()
+                              ? `${customerInfo.name.trim()},${customerInfo.countryCode}${customerInfo.phone.trim().replace(/^0/, '')}`
+                              : 'Sadeep,+94705922792';
+                            navigator.clipboard.writeText(refToCopy);
+                            setCopiedRef(true);
+                            setTimeout(() => setCopiedRef(false), 2500);
+                          }}
+                          style={{
+                            padding: '0.2rem 0.65rem',
+                            fontSize: '0.75rem',
+                            borderRadius: 'var(--radius-sm)',
+                            backgroundColor: copiedRef ? '#10b981' : 'var(--bg-tertiary)',
+                            color: copiedRef ? '#ffffff' : 'var(--accent-cyan)',
+                            border: '1px solid var(--border-color)',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.3rem',
+                            fontWeight: 600,
+                            transition: 'all 0.2s ease'
+                          }}
+                        >
+                          {copiedRef ? (
+                            <>
+                              <CheckCircle2 size={13} />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy size={13} />
+                              <span>Copy Reference</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
 
                     <div style={{ backgroundColor: 'rgba(6, 182, 212, 0.12)', borderLeft: '3px solid var(--accent-cyan)', padding: '0.6rem 0.85rem', borderRadius: '4px', fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: '1.25rem' }}>

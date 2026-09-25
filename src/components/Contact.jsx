@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, MapPin, PhoneCall, Send, CheckCircle2, MessageSquare, Linkedin, ExternalLink, Briefcase, AlertCircle } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
-import { countryCodes } from './Services';
+import { countryCodes, validatePhoneByCountry } from './Services';
 
 export default function Contact() {
   const { personal } = portfolioData;
@@ -25,26 +25,28 @@ export default function Contact() {
     const nameRegex = /^[a-zA-Z\s\.\'-]+$/;
 
     if (field === 'name') {
-      if (!value || !value.trim()) return 'Please enter your name.';
-      if (value.trim().length < 2) return 'Name must be at least 2 characters long.';
-      if (/\d/.test(value)) return 'Name cannot contain numbers. Please use letters only.';
-      if (!nameRegex.test(value.trim())) return 'Name should contain letters and spaces only.';
+      if (!value || !value.trim()) return 'Please enter your full name.';
+      const trimmed = value.trim();
+      const words = trimmed.split(/\s+/).filter(Boolean);
+      if (words.length < 2) {
+        return 'Please enter both First Name and Last Name with a space (e.g. Ruwan Silva).';
+      }
+      if (/\d/.test(trimmed)) return 'Name cannot contain numbers. Please use letters only.';
+      if (!nameRegex.test(trimmed)) return 'Name should contain letters and spaces only.';
       return null;
     }
 
     if (field === 'email') {
       if (!value || !value.trim()) return 'Please enter your email address.';
       if (!emailRegex.test(value.trim())) {
-        return 'Please enter a complete email address (e.g. name@gmail.com, name@outlook.com).';
+        return 'Please enter a complete email address (e.g. ruwan@gmail.com).';
       }
       return null;
     }
 
     if (field === 'phone') {
       if (value && value.trim()) {
-        const clean = value.replace(/[\s\-\(\)]/g, '');
-        if (!/^\d+$/.test(clean)) return 'Phone number must contain digits only.';
-        if (clean.length < 7 || clean.length > 12) return 'Phone number must be between 7 and 12 digits.';
+        return validatePhoneByCountry(currentForm.countryCode, value);
       }
       return null;
     }
@@ -235,7 +237,7 @@ export default function Contact() {
                 <input
                   type="text"
                   id="name"
-                  placeholder="e.g. Sarah Jenkins"
+                  placeholder="e.g. Ruwan Silva"
                   className="form-input"
                   autoCapitalize="words"
                   style={
@@ -275,7 +277,7 @@ export default function Contact() {
                   type="email"
                   id="email"
                   inputMode="email"
-                  placeholder="e.g. sarah@gmail.com, sarah@outlook.com"
+                  placeholder="e.g. ruwan@gmail.com"
                   className="form-input"
                   style={
                     touched.email && errors.email
