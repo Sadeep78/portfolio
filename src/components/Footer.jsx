@@ -21,13 +21,6 @@ export default function Footer() {
           </p>
         </div>
 
-        <div className="vercel-badge">
-          <svg className="vercel-icon" viewBox="0 0 76 65" fill="currentColor">
-            <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
-          </svg>
-          <span>Ready for Deployment on Vercel</span>
-        </div>
-
         <button 
           onClick={scrollToTop} 
           className="social-icon-btn"
