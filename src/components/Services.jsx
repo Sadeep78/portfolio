@@ -448,58 +448,58 @@ export default function Services() {
   };
 
   return (
-    <section className="section" id="services" style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)' }}>
+    <section className="section" id="services" style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)', padding: '2.5rem 0 3.5rem 0', scrollMarginTop: '75px' }}>
       <div className="container">
-        <div className="section-header">
-          <div className="section-tag">Services & Booking</div>
-          <h2 className="section-title">Professional Services & Advance Booking</h2>
-          <p className="section-subtitle">
+        <div className="section-header" style={{ marginBottom: '1.25rem' }}>
+          <div className="section-tag" style={{ marginBottom: '0.5rem' }}>Services & Booking</div>
+          <h2 className="section-title" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Professional Services & Advance Booking</h2>
+          <p className="section-subtitle" style={{ fontSize: '0.95rem' }}>
             Order custom Full-Stack Web Development, Business Analysis, or Project Management. Confirm your project booking with a minimal LKR 1,000 advance payment!
           </p>
         </div>
 
         {/* Services Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.75rem', marginBottom: '3rem' }}>
+        <div id="services-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '2rem', scrollMarginTop: '80px' }}>
           {services.map((service, idx) => (
-            <div key={idx} className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', position: 'relative', height: '100%' }}>
+            <div key={idx} className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', position: 'relative', height: '100%' }}>
               {service.badge && (
                 <div style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', background: 'rgba(6, 182, 212, 0.15)', color: 'var(--accent-cyan)', fontSize: '0.75rem', fontWeight: 700, padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
                   {service.badge}
                 </div>
               )}
 
-              <div style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 600, textTransform: 'uppercase', tracking: '0.05em', marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 600, textTransform: 'uppercase', tracking: '0.05em', marginBottom: '0.4rem' }}>
                 {service.category}
               </div>
 
-              <h3 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '0.75rem', lineHeight: 1.3 }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.5rem', lineHeight: 1.3 }}>
                 {service.title}
               </h3>
 
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginBottom: '1.25rem', lineHeight: 1.5 }}>
                 {service.description}
               </p>
 
               {/* Price Breakdown Card */}
-              <div style={{ background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', marginBottom: '1.5rem', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', padding: '0.85rem 1.1rem', marginBottom: '1.25rem', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <span style={{ fontSize: '0.88rem', color: '#25D366', fontWeight: 700 }}>Advance Booking Fee:</span>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#25D366' }}>{service.advancePrice}</span>
+                  <span style={{ fontSize: '0.85rem', color: '#25D366', fontWeight: 700 }}>Advance Booking Fee:</span>
+                  <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#25D366' }}>{service.advancePrice}</span>
                 </div>
                 {service.id === 'fullstack-dev' && (
-                  <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', borderTop: '1px dashed var(--border-color)', paddingTop: '0.55rem', marginTop: '0.55rem', lineHeight: 1.5 }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', borderTop: '1px dashed var(--border-color)', paddingTop: '0.45rem', marginTop: '0.45rem', lineHeight: 1.4 }}>
                     <strong style={{ color: 'var(--accent-cyan)' }}>Remaining Amount:</strong> Payable within 1 week after project completion. Deployed to Vercel/Netlify.
                   </div>
                 )}
               </div>
 
               {/* Features Checklist */}
-              <div style={{ flexGrow: 1, marginBottom: '1.75rem' }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.75rem' }}>INCLUDED IN SERVICE:</div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              <div style={{ flexGrow: 1, marginBottom: '1.25rem' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.5rem' }}>INCLUDED IN SERVICE:</div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                   {service.features.map((feat, fIdx) => (
-                    <li key={fIdx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                      <Check size={16} style={{ color: 'var(--accent-cyan)', flexShrink: 0, marginTop: '0.15rem' }} />
+                    <li key={fIdx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.83rem', color: 'var(--text-secondary)' }}>
+                      <Check size={15} style={{ color: 'var(--accent-cyan)', flexShrink: 0, marginTop: '0.15rem' }} />
                       <span>{feat}</span>
                     </li>
                   ))}
@@ -510,7 +510,7 @@ export default function Services() {
               <button 
                 onClick={() => handleOpenModal(service)}
                 className="btn btn-primary"
-                style={{ width: '100%', justifyContent: 'center' }}
+                style={{ width: '100%', justifyContent: 'center', padding: '0.8rem 1.2rem', fontWeight: 700 }}
               >
                 <span>Book Service & Pay Advance</span>
                 <ArrowRight size={16} />

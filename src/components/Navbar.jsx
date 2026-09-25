@@ -36,7 +36,8 @@ export default function Navbar({ theme, toggleTheme }) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
-      const targetElement = document.querySelector(href);
+      const targetId = href === '#services' ? '#services-grid' : href;
+      const targetElement = document.querySelector(targetId) || document.querySelector(href);
       if (targetElement) {
         const navHeight = 70;
         const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;

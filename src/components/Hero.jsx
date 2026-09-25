@@ -44,7 +44,8 @@ export default function Hero() {
   const handleNavClick = (e, href) => {
     if (href && href.startsWith('#')) {
       e.preventDefault();
-      const targetElement = document.querySelector(href);
+      const targetId = href === '#services' ? '#services-grid' : href;
+      const targetElement = document.querySelector(targetId) || document.querySelector(href);
       if (targetElement) {
         const navHeight = 70;
         const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
