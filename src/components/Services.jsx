@@ -474,32 +474,32 @@ export default function Services() {
     const activeReference = `${customerInfo.name.trim()} (${fullPhone})`;
 
     const slipInfoText = slipDirectLink
-      ? `📄 *Slip File:* ${slipFile.name}\n🔗 *Direct Live Slip Link:* ${slipDirectLink}`
-      : `📄 *Slip File:* ${slipFile ? slipFile.name : 'Uploaded'}`;
+      ? `📌 *Slip File:* ${slipFile.name}\n🔗 *Direct Live Slip Link:* ${slipDirectLink}`
+      : `📌 *Slip File:* ${slipFile ? slipFile.name : 'Uploaded'}`;
 
     const rawMessage = 
-      `✨ *NEW SERVICE BOOKING REQUEST* ✨\n` +
+      `✦ *NEW SERVICE BOOKING REQUEST* ✦\n` +
       `----------------------------------------\n` +
-      `👋 *Hello Sadeep,*\n` +
+      `★ *Hello Sadeep,*\n` +
       `I have placed a new project booking on your portfolio website (https://sadeep.vercel.app).\n\n` +
-      `📌 *BOOKED SERVICE DETAILS:*\n` +
-      `🎯 *Service:* ${serviceTitle}\n` +
-      `💵 *Advance Fee Paid:* ${advanceFee}\n` +
-      `💰 *Full Service Price:* ${fullPrice}\n` +
-      `⏳ *Remaining Balance:* ${remainingFee}\n\n` +
-      `👤 *CUSTOMER CONTACT DETAILS:*\n` +
-      `📛 *Name:* ${customerInfo.name.trim()}\n` +
-      `📧 *Email:* ${customerInfo.email.trim()}\n` +
-      `📞 *Contact Phone:* ${fullPhone}\n` +
-      `💬 *WhatsApp Number:* ${fullWhatsApp}\n` +
-      `📝 *Notes / Requirements:* ${customerInfo.message.trim() || 'N/A'}\n\n` +
-      `🏦 *COMMERCIAL BANK DEPOSIT DETAILS:*\n` +
-      `🏦 *Bank & Branch:* ${bankDetails.bankName} (${bankDetails.branch})\n` +
-      `🔢 *Account No:* ${bankDetails.accountNumber}\n` +
-      `📌 *Payment Reference Added:* "${activeReference}"\n` +
+      `► *BOOKED SERVICE DETAILS:*\n` +
+      `▪ *Service:* ${serviceTitle}\n` +
+      `▪ *Advance Fee Paid:* ${advanceFee}\n` +
+      `▪ *Full Service Price:* ${fullPrice}\n` +
+      `▪ *Remaining Balance:* ${remainingFee}\n\n` +
+      `► *CUSTOMER CONTACT DETAILS:*\n` +
+      `▪ *Name:* ${customerInfo.name.trim()}\n` +
+      `▪ *Email:* ${customerInfo.email.trim()}\n` +
+      `▪ *Contact Phone:* ${fullPhone}\n` +
+      `▪ *WhatsApp Number:* ${fullWhatsApp}\n` +
+      `▪ *Notes / Requirements:* ${customerInfo.message.trim() || 'N/A'}\n\n` +
+      `► *COMMERCIAL BANK DEPOSIT DETAILS:*\n` +
+      `▪ *Bank & Branch:* ${bankDetails.bankName} (${bankDetails.branch})\n` +
+      `▪ *Account No:* ${bankDetails.accountNumber}\n` +
+      `▪ *Payment Reference Added:* "${activeReference}"\n` +
       `${slipInfoText}\n\n` +
       `----------------------------------------\n` +
-      `✅ *Please verify the payment slip and confirm my booking request.* Thank you! 🙏`;
+      `✔ *Please verify the payment slip and confirm my booking request.* Thank you!`;
 
     const whatsappUrl = `https://wa.me/${bankDetails.whatsappNumber}?text=${encodeURIComponent(rawMessage)}`;
 
