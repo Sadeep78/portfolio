@@ -1,32 +1,57 @@
 import React, { useState } from 'react';
-import { X, Download, ExternalLink, ShieldCheck, FileText, Award, Layers } from 'lucide-react';
+import { X, Download, ExternalLink, ShieldCheck, FileText, Award, Layers, Archive } from 'lucide-react';
+import JSZip from 'jszip';
 
 export default function CertificateModal({ certificate, onClose }) {
   if (!certificate) return null;
 
   const [activeTab, setActiveTab] = useState('main'); // 'main' or 'alt'
+  const [isZipping, setIsZipping] = useState(false);
 
   const currentUrl = activeTab === 'main' ? certificate.pdfUrl : (certificate.pdfUrlAlt || certificate.pdfUrl);
   const isImage = currentUrl && (currentUrl.endsWith('.png') || currentUrl.endsWith('.jpg') || currentUrl.endsWith('.jpeg'));
 
-  const handleDownloadBoth = () => {
-    // Helper function to trigger download for a URL
-    const triggerDownload = (url, fileName) => {
+  const handleDownloadBoth = async () => {
+    if (!certificate) return;
+    setIsZipping(true);
+    try {
+      const zip = new JSZip();
+
+      if (certificate.pdfUrl) {
+        const res1 = await fetch(certificate.pdfUrl);
+        const blob1 = await res1.blob();
+        const ext1 = certificate.pdfUrl.split('.').pop() || 'pdf';
+        const name1 = certificate.fileName || `${certificate.id}_document1.${ext1}`;
+        zip.file(name1, blob1);
+      }
+
+      if (certificate.pdfUrlAlt) {
+        const res2 = await fetch(certificate.pdfUrlAlt);
+        const blob2 = await res2.blob();
+        const ext2 = certificate.pdfUrlAlt.split('.').pop() || 'png';
+        const name2 = certificate.fileNameAlt || `${certificate.id}_document2.${ext2}`;
+        zip.file(name2, blob2);
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const zipUrl = URL.createObjectURL(zipBlob);
+
       const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
+      link.href = zipUrl;
+      link.download = `${certificate.id}_certificates.zip`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    };
-
-    if (certificate.pdfUrl) {
-      triggerDownload(certificate.pdfUrl, certificate.fileName || `${certificate.title}`);
-    }
-    if (certificate.pdfUrlAlt) {
-      setTimeout(() => {
-        triggerDownload(certificate.pdfUrlAlt, certificate.fileNameAlt || `${certificate.title}_Stage1`);
-      }, 400);
+      URL.revokeObjectURL(zipUrl);
+    } catch (err) {
+      console.error('Modal ZIP error:', err);
+      // Fallback
+      const link1 = document.createElement('a');
+      link1.href = certificate.pdfUrl;
+      link1.download = certificate.fileName || `${certificate.title}`;
+      link1.click();
+    } finally {
+      setIsZipping(false);
     }
   };
 
@@ -53,10 +78,11 @@ export default function CertificateModal({ certificate, onClose }) {
               <button 
                 onClick={handleDownloadBoth}
                 className="btn btn-primary btn-sm"
-                title="Download Stage 1 & Stage 2 / Both Documents"
+                title="Download Stage 1 & Stage 2 / Both Documents as ZIP"
+                disabled={isZipping}
               >
-                <Download size={15} />
-                <span>Download Both Files</span>
+                <Archive size={15} />
+                <span>{isZipping ? 'Zipping Files...' : 'Download ZIP Archive'}</span>
               </button>
             ) : (
               certificate.pdfUrl && (

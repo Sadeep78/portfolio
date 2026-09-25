@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Cpu, LayoutGrid, CheckCircle, Award, Users, Globe, ExternalLink, Eye, Download } from 'lucide-react';
+import { ShieldCheck, Cpu, LayoutGrid, CheckCircle, Award, Users, Globe, ExternalLink, Eye, Download, Archive } from 'lucide-react';
+import JSZip from 'jszip';
 import { portfolioData } from '../data/portfolioData';
 import CertificateModal from './CertificateModal';
 
 export default function About() {
   const { about, stats, certifications, organizations, languages } = portfolioData;
   const [activeCert, setActiveCert] = useState(null);
+  const [downloadingId, setDownloadingId] = useState(null);
 
   const principleIcons = [
     <Cpu size={24} key="cpu" />,
@@ -13,22 +15,56 @@ export default function About() {
     <ShieldCheck size={24} key="shield" />
   ];
 
-  const handleDownloadBoth = (e, cert) => {
+  const handleDownloadBoth = async (e, cert) => {
     if (cert.pdfUrlAlt) {
       e.preventDefault();
-      const triggerDownload = (url, fileName) => {
+      setDownloadingId(cert.id);
+      try {
+        const zip = new JSZip();
+
+        // Fetch primary certificate document
+        const res1 = await fetch(cert.pdfUrl);
+        const blob1 = await res1.blob();
+        const ext1 = cert.pdfUrl.split('.').pop() || 'pdf';
+        const name1 = cert.fileName || `${cert.id}_document1.${ext1}`;
+        zip.file(name1, blob1);
+
+        // Fetch alternate certificate document
+        const res2 = await fetch(cert.pdfUrlAlt);
+        const blob2 = await res2.blob();
+        const ext2 = cert.pdfUrlAlt.split('.').pop() || 'png';
+        const name2 = cert.fileNameAlt || `${cert.id}_document2.${ext2}`;
+        zip.file(name2, blob2);
+
+        // Compress into ZIP archive
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const zipUrl = URL.createObjectURL(zipBlob);
+
         const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
+        link.href = zipUrl;
+        link.download = `${cert.id}_certificates.zip`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-      };
-
-      triggerDownload(cert.pdfUrl, cert.fileName || `${cert.title}`);
-      setTimeout(() => {
-        triggerDownload(cert.pdfUrlAlt, cert.fileNameAlt || `${cert.title}_Stage1`);
-      }, 400);
+        URL.revokeObjectURL(zipUrl);
+      } catch (err) {
+        console.error('ZIP generation error:', err);
+        // Fallback standard download
+        const triggerDownload = (url, fileName) => {
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        };
+        triggerDownload(cert.pdfUrl, cert.fileName || cert.title);
+        if (cert.pdfUrlAlt) {
+          setTimeout(() => triggerDownload(cert.pdfUrlAlt, cert.fileNameAlt || `${cert.title}_Alt`), 400);
+        }
+      } finally {
+        setDownloadingId(null);
+      }
     }
   };
 
@@ -117,70 +153,76 @@ export default function About() {
             </p>
           </div>
 
-          <div className="certifications-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+          <div className="certifications-grid">
             {certifications.map((cert, idx) => (
-              <div key={idx} className="glass-card" style={{ padding: '1.75rem', display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '46px', height: '46px', borderRadius: 'var(--radius-md)', background: 'rgba(6, 182, 212, 0.12)', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Award size={24} />
-                </div>
-                <div style={{ flexGrow: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <h4 style={{ fontSize: '1.05rem', fontWeight: 700 }}>{cert.title}</h4>
-                    <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)', backgroundColor: 'rgba(6, 182, 212, 0.12)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)', fontWeight: 600 }}>
-                      {cert.date}
-                    </span>
+              <div key={idx} className="glass-card cert-card-item">
+                <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start', flexGrow: 1 }}>
+                  <div style={{ width: '46px', height: '46px', borderRadius: 'var(--radius-md)', background: 'rgba(6, 182, 212, 0.12)', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Award size={24} />
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0.35rem 0 0.75rem 0', lineHeight: 1.5 }}>
-                    {cert.issuer}
-                    <div style={{ marginTop: '0.2rem', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      Credential Code: <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{cert.credentialId}</span>
+                  <div style={{ flexGrow: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <h4 style={{ fontSize: '1.05rem', fontWeight: 700, lineHeight: 1.3 }}>{cert.title}</h4>
+                      <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)', backgroundColor: 'rgba(6, 182, 212, 0.12)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)', fontWeight: 600, flexShrink: 0 }}>
+                        {cert.date}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0.35rem 0 0.75rem 0', lineHeight: 1.5 }}>
+                      {cert.issuer}
+                      <div style={{ marginTop: '0.2rem', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--text-muted)', wordBreak: 'break-all', overflowWrap: 'anywhere' }}>
+                        Credential Code: <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{cert.credentialId}</span>
+                      </div>
+                    </div>
+
+                    {/* View & Download Certificate Actions */}
+                    <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
+                      {cert.pdfUrl && (
+                        <button 
+                          onClick={() => setActiveCert(cert)}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '0.35rem 0.8rem', fontSize: '0.8rem' }}
+                        >
+                          <Eye size={14} />
+                          <span>View Certificate</span>
+                        </button>
+                      )}
+
+                      {cert.pdfUrl && (
+                        <a 
+                          href={cert.pdfUrl}
+                          download={cert.fileName || `${cert.title}.pdf`}
+                          onClick={(e) => handleDownloadBoth(e, cert)}
+                          className="btn btn-primary btn-sm"
+                          style={{ padding: '0.35rem 0.8rem', fontSize: '0.8rem' }}
+                        >
+                          {cert.pdfUrlAlt ? <Archive size={14} /> : <Download size={14} />}
+                          <span>
+                            {cert.pdfUrlAlt 
+                              ? (downloadingId === cert.id ? 'Zipping Files...' : 'Download ZIP Archive') 
+                              : 'Download PDF'}
+                          </span>
+                        </a>
+                      )}
+
+                      {cert.verifyUrl && (
+                        <a 
+                          href={cert.verifyUrl} 
+                          target="_blank" 
+                          rel="noreferrer" 
+                          style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.3rem', alignSelf: 'center' }}
+                        >
+                          <span>open.uom.lk</span>
+                          <ExternalLink size={13} />
+                        </a>
+                      )}
                     </div>
                   </div>
+                </div>
 
-                  {/* View & Download Certificate Actions */}
-                  <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
-                    {cert.pdfUrl && (
-                      <button 
-                        onClick={() => setActiveCert(cert)}
-                        className="btn btn-secondary btn-sm"
-                        style={{ padding: '0.35rem 0.8rem', fontSize: '0.8rem' }}
-                      >
-                        <Eye size={14} />
-                        <span>View Certificate</span>
-                      </button>
-                    )}
-
-                    {cert.pdfUrl && (
-                      <a 
-                        href={cert.pdfUrl}
-                        download={cert.fileName || `${cert.title}.pdf`}
-                        onClick={(e) => handleDownloadBoth(e, cert)}
-                        className="btn btn-primary btn-sm"
-                        style={{ padding: '0.35rem 0.8rem', fontSize: '0.8rem' }}
-                      >
-                        <Download size={14} />
-                        <span>{cert.pdfUrlAlt ? 'Download Both Files' : 'Download PDF'}</span>
-                      </a>
-                    )}
-
-                    {cert.verifyUrl && (
-                      <a 
-                        href={cert.verifyUrl} 
-                        target="_blank" 
-                        rel="noreferrer" 
-                        style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.3rem', alignSelf: 'center' }}
-                      >
-                        <span>open.uom.lk</span>
-                        <ExternalLink size={13} />
-                      </a>
-                    )}
-                  </div>
-
-                  <div className="project-tags">
-                    {cert.skills.map((skill, sIdx) => (
-                      <span key={sIdx} className="project-tag">{skill}</span>
-                    ))}
-                  </div>
+                <div className="project-tags" style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                  {cert.skills.map((skill, sIdx) => (
+                    <span key={sIdx} className="project-tag">{skill}</span>
+                  ))}
                 </div>
               </div>
             ))}
