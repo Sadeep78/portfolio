@@ -90,6 +90,22 @@ export const validateEmailStrict = (email) => {
   return null;
 };
 
+export const isDummyPhoneNumber = (clean) => {
+  if (!clean) return false;
+  // All digits identical (e.g. 0000000000, 111111111, 999999999)
+  if (/^(\d)\1+$/.test(clean)) return true;
+
+  // Sequential or test digit patterns
+  const testPatterns = [
+    '123456789', '987654321', '012345678', '876543210',
+    '12345678', '87654321', '1234567890', '0987654321',
+    '112233445', '123123123', '000000000', '0000000000'
+  ];
+  if (testPatterns.includes(clean)) return true;
+
+  return false;
+};
+
 export const validatePhoneByCountry = (code, rawNumber) => {
   if (!rawNumber || !rawNumber.trim()) return 'Please enter your phone number.';
   
@@ -101,6 +117,10 @@ export const validatePhoneByCountry = (code, rawNumber) => {
   }
 
   if (!/^\d+$/.test(clean)) return 'Phone number must contain digits only.';
+
+  if (isDummyPhoneNumber(clean)) {
+    return 'Invalid phone number. Repetitive digits (e.g. 0000000000) or test sequences are not allowed. Please enter your real active phone number.';
+  }
 
   const validLengths = rule.digits;
   if (!validLengths.includes(clean.length)) {
@@ -735,9 +755,37 @@ export default function Services() {
                   </h4>
 
                   <div style={{ background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', padding: '1.25rem', border: '1px solid var(--border-color)', marginBottom: '1.5rem' }}>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#25D366', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <Building2 size={16} />
-                      <span>Commercial Bank Transfer Details:</span>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#25D366', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <Building2 size={16} />
+                        <span>Commercial Bank Transfer Details:</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentRefStr = customerInfo.name.trim() && customerInfo.phone.trim()
+                            ? `${customerInfo.name.trim()},${customerInfo.countryCode}${customerInfo.phone.trim().replace(/^0/, '')}`
+                            : 'Sadeep,+94705922792';
+                          const allText = `Commercial Bank Transfer Details:\nAccount Name: ${bankDetails.accountName}\nBank: ${bankDetails.bankName}\nBranch: ${bankDetails.branch}\nAccount No: ${bankDetails.accountNumber}\nPayment Reference: ${currentRefStr}`;
+                          handleCopyBankInfo(allText, 'allBankDetails');
+                        }}
+                        className="btn btn-secondary btn-sm"
+                        style={{
+                          padding: '0.25rem 0.65rem',
+                          fontSize: '0.75rem',
+                          backgroundColor: copiedField === 'allBankDetails' ? '#10b981' : 'rgba(37, 211, 102, 0.2)',
+                          color: copiedField === 'allBankDetails' ? '#ffffff' : '#25D366',
+                          border: '1px solid rgba(37, 211, 102, 0.5)',
+                          fontWeight: 700,
+                          borderRadius: 'var(--radius-sm)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.3rem'
+                        }}
+                      >
+                        <Copy size={13} />
+                        <span>{copiedField === 'allBankDetails' ? '✓ Copied All Details' : 'Copy All Bank Details'}</span>
+                      </button>
                     </div>
 
                     <div style={{ fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1rem', background: 'var(--bg-secondary)', padding: '0.95rem', borderRadius: 'var(--radius-sm)' }}>
@@ -839,9 +887,18 @@ export default function Services() {
                     {/* Mandatory YES Confirmation Field */}
                     <div className="form-group" style={{ marginBottom: '1.25rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                        <label className="form-label" htmlFor="confirm-yes" style={{ margin: 0 }}>Type "YES" to confirm you added Payment Reference *</label>
+                        {(() => {
+                          const exampleRefStr = customerInfo.name.trim() && customerInfo.phone.trim()
+                            ? `${customerInfo.name.trim()},${customerInfo.countryCode}${customerInfo.phone.trim().replace(/^0/, '')}`
+                            : 'Sadeep,+94705922792';
+                          return (
+                            <label className="form-label" htmlFor="confirm-yes" style={{ margin: 0, fontSize: '0.85rem', lineHeight: 1.4 }}>
+                              Type "YES" to confirm you added Payment Reference (ex- {exampleRefStr}) *
+                            </label>
+                          );
+                        })()}
                         {touched.confirmYes && !formErrors.confirmYes && (
-                          <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem', flexShrink: 0, marginLeft: '0.5rem' }}>
                             <CheckCircle2 size={13} /> Confirmed YES
                           </span>
                         )}
