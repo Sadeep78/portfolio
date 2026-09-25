@@ -407,11 +407,29 @@ export default function Services() {
     return Object.keys(activeErrors).length === 0;
   };
 
-  const handleBookingSubmit = (e) => {
+  const handleBookingSubmit = async (e) => {
     e.preventDefault();
     if (!validateAllForm()) return;
 
     setLoading(true);
+
+    let slipDirectLink = null;
+    if (slipFile) {
+      try {
+        const formData = new FormData();
+        formData.append('file', slipFile);
+        const res = await fetch('https://tmpfiles.org/api/v1/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data && data.status === 'success' && data.data && data.data.url) {
+          slipDirectLink = data.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+        }
+      } catch (err) {
+        console.warn('Slip upload fallback to filename', err);
+      }
+    }
 
     const serviceTitle = selectedService.title;
     const advanceFee = selectedService.advancePrice;
@@ -425,7 +443,11 @@ export default function Services() {
 
     const activeReference = `${customerInfo.name.trim()} (${fullPhone})`;
 
-    const paymentMethodText = `🏦 *Payment Method:* Commercial Bank Slip Upload%0A📌 *Bank Details:* ${bankDetails.bankName} (${bankDetails.branch}) - Acc: ${bankDetails.accountNumber}%0A🏷️ *Payment Reference Used:* ${encodeURIComponent(activeReference)}%0A📎 *Slip File Attached:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
+    const slipInfoText = slipDirectLink
+      ? `📎 *Uploaded Slip File:* ${encodeURIComponent(slipFile.name)}%0A🔗 *Direct View/Download Slip:* ${encodeURIComponent(slipDirectLink)}`
+      : `📎 *Slip File Attached:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
+
+    const paymentMethodText = `🏦 *Payment Method:* Commercial Bank Slip Upload%0A📌 *Bank Details:* ${bankDetails.bankName} (${bankDetails.branch}) - Acc: ${bankDetails.accountNumber}%0A🏷️ *Payment Reference Used:* ${encodeURIComponent(activeReference)}%0A${slipInfoText}`;
 
     const whatsappMessage = `Hello Sadeep,%0A%0AI have booked a service on your portfolio website and submitted my advance payment details:%0A%0A🎯 *Service Booked:* ${encodeURIComponent(serviceTitle)}%0A💰 *Advance Fee Paid:* ${encodeURIComponent(advanceFee)}%0A💵 *Full Service Price:* ${encodeURIComponent(fullPrice)}%0A⏳ *Remaining Balance:* ${encodeURIComponent(remainingFee)} (Payable within 1 week of delivery)%0A%0A👤 *Customer Name:* ${encodeURIComponent(customerInfo.name.trim())}%0A📧 *Email:* ${encodeURIComponent(customerInfo.email.trim())}%0A📞 *Contact Phone:* ${encodeURIComponent(fullPhone)}%0A💬 *WhatsApp Number:* ${encodeURIComponent(fullWhatsApp)}%0A💬 *Additional Notes:* ${encodeURIComponent(customerInfo.message.trim() || 'N/A')}%0A%0A${paymentMethodText}%0A%0APlease verify and confirm my booking request. Thank you!`;
 
