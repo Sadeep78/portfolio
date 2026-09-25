@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Github, Linkedin, Twitter, Mail, Phone, ShieldCheck, Download } from 'lucide-react';
+import { ArrowRight, Github, Linkedin, Twitter, Mail, Phone, ShieldCheck, Download, BookOpen } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
 
 export default function Hero() {
@@ -8,6 +8,7 @@ export default function Hero() {
   const roles = [
     "Project Manager",
     "Business Analyst",
+    "Technical Writer",
     "Enterprise Architect",
     "Solution / System Architect",
     "Information Systems Engineer",
@@ -120,6 +121,9 @@ export default function Hero() {
             <a href={personal.socials.linkedin} target="_blank" rel="noreferrer" className="social-icon-btn" title="LinkedIn Profile">
               <Linkedin size={20} />
             </a>
+            <a href={personal.socials.medium} target="_blank" rel="noreferrer" className="social-icon-btn" title="Medium Technical Articles (@sasankasadeep78)">
+              <BookOpen size={20} />
+            </a>
             <a href={personal.socials.mail} className="social-icon-btn" title="Send Email">
               <Mail size={20} />
             </a>
@@ -144,12 +148,13 @@ export default function Hero() {
                   <h3 className="portrait-title">{personal.name}</h3>
                   <p className="portrait-subtitle">BSc (Hons) in Information Technology Specialising in Information Systems Engineering • SLIIT</p>
                 </div>
-                <div className="verified-badge" title="Certified Scrum Master & BA">
+                <div className="verified-badge" title="Certified Scrum Master, BA & Technical Writer">
                   <ShieldCheck size={18} />
                 </div>
               </div>
 
               <div className="portrait-skills-bar">
+                <span className="portrait-tech-tag">Tech Writer</span>
                 <span className="portrait-tech-tag">AWS Cloud</span>
                 <span className="portrait-tech-tag">Java Spring</span>
                 <span className="portrait-tech-tag">Scrum Master</span>

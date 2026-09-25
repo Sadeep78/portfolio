@@ -1,9 +1,9 @@
 export const portfolioData = {
   personal: {
     name: "Sadeep Sasanka",
-    role: "Project Manager | Business Analyst | Enterprise & Solution Architect | Information Systems Engineer",
-    tagline: "Architecting Java Spring Boot Systems, AWS Cloud Infrastructure & Business Analysis",
-    bio: "BSc (Hons) in Information Technology Specialising in Information Systems Engineering undergraduate at SLIIT with 3+ years of experience in Project Management, Business Analysis techniques, and software development. Proven track record leading agile project teams, conducting UML requirements modeling, managing cloud infrastructure at Decodelabs, and building enterprise web applications.",
+    role: "Project Manager | Business Analyst | Technical Writer | Enterprise & Solution Architect | Information Systems Engineer",
+    tagline: "Architecting Java Spring Boot Systems, AWS Cloud Infrastructure, Technical Writing & Business Analysis",
+    bio: "BSc (Hons) in Information Technology Specialising in Information Systems Engineering undergraduate at SLIIT with 3+ years of experience in Project Management, Business Analysis techniques, Technical Writing, and software development. Proven track record publishing technical articles on Medium, leading agile project teams, conducting UML requirements modeling, managing cloud infrastructure at Decodelabs, and building enterprise web applications.",
     location: "Hapugala, Galle, Sri Lanka",
     email: "sasankasadeep78@gmail.com",
     phone: "+94 70 592 2792",
@@ -12,6 +12,7 @@ export const portfolioData = {
     socials: {
       github: "https://github.com/Sadeep78",
       linkedin: "http://www.linkedin.com/in/sadeep-sasanka-618a951b8",
+      medium: "https://medium.com/@sasankasadeep78",
       twitter: "https://twitter.com",
       mail: "mailto:sasankasadeep78@gmail.com",
       phone: "tel:+94705922792"
@@ -211,9 +212,10 @@ export const portfolioData = {
       ]
     },
     {
-      name: "Business Analysis & UML Engineering",
+      name: "Business Analysis & Technical Writing",
       skills: [
         { name: "Business Analysis & Requirements Gathering", level: "Expert", icon: "Network" },
+        { name: "Technical Writing & Medium Articles", level: "Expert", icon: "BookOpen" },
         { name: "Unified Modeling Language (UML Diagrams)", level: "Expert", icon: "Layers" },
         { name: "Process Modeling & SAP Support Docs", level: "Advanced", icon: "Layers" },
         { name: "User Acceptance Testing (UAT)", level: "Advanced", icon: "GitBranch" }

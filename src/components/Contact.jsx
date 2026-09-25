@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, MapPin, PhoneCall, Send, CheckCircle2, MessageSquare, Linkedin, ExternalLink, Briefcase, AlertCircle } from 'lucide-react';
+import { Mail, MapPin, PhoneCall, Send, CheckCircle2, MessageSquare, Linkedin, ExternalLink, Briefcase, AlertCircle, BookOpen } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
 import { countryCodes, validatePhoneByCountry, validateEmailStrict, SearchableCountrySelect } from './Services';
 
@@ -182,6 +182,24 @@ export default function Contact() {
                     style={{ fontWeight: 600, color: 'var(--accent-cyan)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
                   >
                     <span>linkedin.com/in/sadeep-sasanka</span>
+                    <ExternalLink size={14} />
+                  </a>
+                </div>
+              </div>
+
+              <div className="contact-item">
+                <div className="contact-icon" style={{ backgroundColor: 'rgba(6, 182, 212, 0.15)', color: 'var(--accent-cyan)' }}>
+                  <BookOpen size={20} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Medium Technical Writing</div>
+                  <a 
+                    href={personal.socials.medium} 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    style={{ fontWeight: 600, color: 'var(--accent-cyan)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                  >
+                    <span>medium.com/@sasankasadeep78</span>
                     <ExternalLink size={14} />
                   </a>
                 </div>
