@@ -27,7 +27,7 @@ export const portfolioData = {
   stats: [
     { label: "Degree & Specialization", value: "BSc (Hons) IT", accent: "Specialising in ISE" },
     { label: "Management Experience", value: "3+ Years", accent: "Project Manager & BA" },
-    { label: "Verified Certificates", value: "11 Documents", accent: "SLIIT, IEEE, BCAS & UoM" },
+    { label: "Verified Certificates", value: "12 Documents", accent: "SLIIT, IEEE, BCAS, UoM & Ceycert" },
     { label: "ML & Systems Accuracy", value: "83.64%", accent: "Tuned KNN (k=15)" }
   ],
 
@@ -51,6 +51,17 @@ export const portfolioData = {
   },
 
   certifications: [
+    {
+      id: "ceycert-personal-data-protection",
+      title: "Personal Data Protection Act (Webinar)",
+      issuer: "Ceycert (Private) Limited (Led by Mr. Muktesh Murthy)",
+      date: "Aug 26, 2026",
+      credentialId: "CC-W-ICT1-2608023",
+      verifyUrl: null,
+      pdfUrl: "/certificates/ceycert-personal-data-protection-act.pdf",
+      fileName: "Ceycert_Personal_Data_Protection_Act_Certificate.pdf",
+      skills: ["Personal Data Protection Act (PDPA)", "Data Privacy & Governance", "Information Security", "Legal Compliance & Ethics"]
+    },
     {
       id: "gitgenius-2026-ieee-sltc",
       title: "GitGenius 2026 - Git & GitHub Workshop Series",
