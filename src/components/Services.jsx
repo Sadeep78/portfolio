@@ -60,6 +60,31 @@ export const validTlds = [
   'kr', 'sa', 'ae', 'online', 'site', 'store', 'xyz', 'global', 'cloud'
 ];
 
+export const commonDomainTypos = {
+  'gmaik.com': 'gmail.com',
+  'gamil.com': 'gmail.com',
+  'gmial.com': 'gmail.com',
+  'gmai.com': 'gmail.com',
+  'gnail.com': 'gmail.com',
+  'gmaill.com': 'gmail.com',
+  'gmai.co': 'gmail.com',
+  'gmaill.co': 'gmail.com',
+  'gmail.cmo': 'gmail.com',
+  'gmaik.co': 'gmail.com',
+  'gmaile.com': 'gmail.com',
+  'gmale.com': 'gmail.com',
+  'outluk.com': 'outlook.com',
+  'outlok.com': 'outlook.com',
+  'outllok.com': 'outlook.com',
+  'otlook.com': 'outlook.com',
+  'hotmial.com': 'hotmail.com',
+  'hotmai.com': 'hotmail.com',
+  'yaho.com': 'yahoo.com',
+  'yahou.com': 'yahoo.com',
+  'iclud.com': 'icloud.com',
+  'icoud.com': 'icloud.com'
+};
+
 export const validateEmailStrict = (email) => {
   if (!email || !email.trim()) return 'Please enter your email address.';
   const trimmed = email.trim().toLowerCase();
@@ -74,6 +99,11 @@ export const validateEmailStrict = (email) => {
   const domainParts = domain.split('.');
   const tld = domainParts.pop();
   const domainBody = domainParts.join('.');
+
+  if (commonDomainTypos[domain]) {
+    const suggested = commonDomainTypos[domain];
+    return `Invalid email domain typo "${domain}". Did you mean "${suggested}"? (e.g. ruwan@${suggested})`;
+  }
 
   if (blockedDomains.includes(domain)) {
     return 'Disposable or test email domain detected. Please enter your genuine email (e.g. ruwan@gmail.com).';
@@ -444,12 +474,32 @@ export default function Services() {
     const activeReference = `${customerInfo.name.trim()} (${fullPhone})`;
 
     const slipInfoText = slipDirectLink
-      ? `📎 *Uploaded Slip File:* ${encodeURIComponent(slipFile.name)}%0A🔗 *Direct View/Download Slip:* ${encodeURIComponent(slipDirectLink)}`
-      : `📎 *Slip File Attached:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
+      ? `📄 *Slip File:* ${encodeURIComponent(slipFile.name)}%0A🔗 *Direct Live Slip Link:* ${encodeURIComponent(slipDirectLink)}`
+      : `📄 *Slip File:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
 
-    const paymentMethodText = `🏦 *Payment Method:* Commercial Bank Slip Upload%0A📌 *Bank Details:* ${bankDetails.bankName} (${bankDetails.branch}) - Acc: ${bankDetails.accountNumber}%0A🏷️ *Payment Reference Used:* ${encodeURIComponent(activeReference)}%0A${slipInfoText}`;
-
-    const whatsappMessage = `Hello Sadeep,%0A%0AI have booked a service on your portfolio website and submitted my advance payment details:%0A%0A🎯 *Service Booked:* ${encodeURIComponent(serviceTitle)}%0A💰 *Advance Fee Paid:* ${encodeURIComponent(advanceFee)}%0A💵 *Full Service Price:* ${encodeURIComponent(fullPrice)}%0A⏳ *Remaining Balance:* ${encodeURIComponent(remainingFee)} (Payable within 1 week of delivery)%0A%0A👤 *Customer Name:* ${encodeURIComponent(customerInfo.name.trim())}%0A📧 *Email:* ${encodeURIComponent(customerInfo.email.trim())}%0A📞 *Contact Phone:* ${encodeURIComponent(fullPhone)}%0A💬 *WhatsApp Number:* ${encodeURIComponent(fullWhatsApp)}%0A💬 *Additional Notes:* ${encodeURIComponent(customerInfo.message.trim() || 'N/A')}%0A%0A${paymentMethodText}%0A%0APlease verify and confirm my booking request. Thank you!`;
+    const whatsappMessage = 
+      `✨ *NEW SERVICE BOOKING REQUEST* ✨%0A` +
+      `━━━━━━━━━━━━━━━━━━━━━━%0A` +
+      `👋 *Hello Sadeep,*%0A` +
+      `I have placed a new project booking on your portfolio website (https://sadeep.vercel.app).%0A%0A` +
+      `📌 *BOOKED SERVICE DETAILS:*%0A` +
+      `🎯 *Service:* ${encodeURIComponent(serviceTitle)}%0A` +
+      `💵 *Advance Fee Paid:* ${encodeURIComponent(advanceFee)}%0A` +
+      `💰 *Full Service Price:* ${encodeURIComponent(fullPrice)}%0A` +
+      `⏳ *Remaining Balance:* ${encodeURIComponent(remainingFee)}%0A%0A` +
+      `👤 *CUSTOMER CONTACT DETAILS:*%0A` +
+      `📛 *Name:* ${encodeURIComponent(customerInfo.name.trim())}%0A` +
+      `📧 *Email:* ${encodeURIComponent(customerInfo.email.trim())}%0A` +
+      `📞 *Contact Phone:* ${encodeURIComponent(fullPhone)}%0A` +
+      `💬 *WhatsApp Number:* ${encodeURIComponent(fullWhatsApp)}%0A` +
+      `📝 *Notes / Requirements:* ${encodeURIComponent(customerInfo.message.trim() || 'N/A')}%0A%0A` +
+      `🏦 *COMMERCIAL BANK DEPOSIT DETAILS:*%0A` +
+      `🏛️ *Bank & Branch:* ${encodeURIComponent(bankDetails.bankName)} (${encodeURIComponent(bankDetails.branch)})%0A` +
+      `🔢 *Account No:* ${encodeURIComponent(bankDetails.accountNumber)}%0A` +
+      `🏷️ *Payment Reference Added:* "${encodeURIComponent(activeReference)}"%0A` +
+      `${slipInfoText}%0A%0A` +
+      `━━━━━━━━━━━━━━━━━━━━━━%0A` +
+      `✅ *Please verify the payment slip and confirm my booking request.* Thank you! 🙏`;
 
     const whatsappUrl = `https://wa.me/${bankDetails.whatsappNumber}?text=${whatsappMessage}`;
 
