@@ -88,21 +88,21 @@ export default function Contact() {
 
     const fullPhone = formData.phone.trim() ? `${formData.countryCode} ${formData.phone.trim()}` : 'N/A';
 
-    const formattedText = 
-      `📩 *NEW CONTRACT / INQUIRY MESSAGE* 📩%0A` +
-      `----------------------------------------%0A` +
-      `👋 *Hello Sadeep,*%0A` +
-      `I came across your portfolio website (https://sadeep.vercel.app) and would like to connect regarding a project, contract, or inquiry:%0A%0A` +
-      `👤 *SENDER INFORMATION:*%0A` +
-      `📛 *Name:* ${encodeURIComponent(formData.name.trim())}%0A` +
-      `📧 *Email:* ${encodeURIComponent(formData.email.trim())}%0A` +
-      `📞 *Phone Number:* ${encodeURIComponent(fullPhone)}%0A%0A` +
-      `💬 *MESSAGE / CONTRACT DETAILS:*%0A` +
-      `${encodeURIComponent(formData.message.trim())}%0A%0A` +
-      `----------------------------------------%0A` +
+    const rawMessage = 
+      `📩 *NEW CONTRACT / INQUIRY MESSAGE* 📩\n` +
+      `----------------------------------------\n` +
+      `👋 *Hello Sadeep,*\n` +
+      `I came across your portfolio website (https://sadeep.vercel.app) and would like to connect regarding a project, contract, or inquiry:\n\n` +
+      `👤 *SENDER INFORMATION:*\n` +
+      `📛 *Name:* ${formData.name.trim()}\n` +
+      `📧 *Email:* ${formData.email.trim()}\n` +
+      `📞 *Phone Number:* ${fullPhone}\n\n` +
+      `💬 *MESSAGE / CONTRACT DETAILS:*\n` +
+      `${formData.message.trim()}\n\n` +
+      `----------------------------------------\n` +
       `🚀 *Looking forward to hearing from you soon!* Thank you! 🙏`;
 
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${formattedText}`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(rawMessage)}`;
 
     setLoading(false);
     setSubmitted(true);

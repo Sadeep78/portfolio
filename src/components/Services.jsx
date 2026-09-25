@@ -474,34 +474,34 @@ export default function Services() {
     const activeReference = `${customerInfo.name.trim()} (${fullPhone})`;
 
     const slipInfoText = slipDirectLink
-      ? `📄 *Slip File:* ${encodeURIComponent(slipFile.name)}%0A🔗 *Direct Live Slip Link:* ${encodeURIComponent(slipDirectLink)}`
-      : `📄 *Slip File:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
+      ? `📄 *Slip File:* ${slipFile.name}\n🔗 *Direct Live Slip Link:* ${slipDirectLink}`
+      : `📄 *Slip File:* ${slipFile ? slipFile.name : 'Uploaded'}`;
 
-    const whatsappMessage = 
-      `✨ *NEW SERVICE BOOKING REQUEST* ✨%0A` +
-      `----------------------------------------%0A` +
-      `👋 *Hello Sadeep,*%0A` +
-      `I have placed a new project booking on your portfolio website (https://sadeep.vercel.app).%0A%0A` +
-      `📌 *BOOKED SERVICE DETAILS:*%0A` +
-      `🎯 *Service:* ${encodeURIComponent(serviceTitle)}%0A` +
-      `💵 *Advance Fee Paid:* ${encodeURIComponent(advanceFee)}%0A` +
-      `💰 *Full Service Price:* ${encodeURIComponent(fullPrice)}%0A` +
-      `⏳ *Remaining Balance:* ${encodeURIComponent(remainingFee)}%0A%0A` +
-      `👤 *CUSTOMER CONTACT DETAILS:*%0A` +
-      `📛 *Name:* ${encodeURIComponent(customerInfo.name.trim())}%0A` +
-      `📧 *Email:* ${encodeURIComponent(customerInfo.email.trim())}%0A` +
-      `📞 *Contact Phone:* ${encodeURIComponent(fullPhone)}%0A` +
-      `💬 *WhatsApp Number:* ${encodeURIComponent(fullWhatsApp)}%0A` +
-      `📝 *Notes / Requirements:* ${encodeURIComponent(customerInfo.message.trim() || 'N/A')}%0A%0A` +
-      `🏦 *COMMERCIAL BANK DEPOSIT DETAILS:*%0A` +
-      `🏦 *Bank & Branch:* ${encodeURIComponent(bankDetails.bankName)} (${encodeURIComponent(bankDetails.branch)})%0A` +
-      `🔢 *Account No:* ${encodeURIComponent(bankDetails.accountNumber)}%0A` +
-      `📌 *Payment Reference Added:* "${encodeURIComponent(activeReference)}"%0A` +
-      `${slipInfoText}%0A%0A` +
-      `----------------------------------------%0A` +
+    const rawMessage = 
+      `✨ *NEW SERVICE BOOKING REQUEST* ✨\n` +
+      `----------------------------------------\n` +
+      `👋 *Hello Sadeep,*\n` +
+      `I have placed a new project booking on your portfolio website (https://sadeep.vercel.app).\n\n` +
+      `📌 *BOOKED SERVICE DETAILS:*\n` +
+      `🎯 *Service:* ${serviceTitle}\n` +
+      `💵 *Advance Fee Paid:* ${advanceFee}\n` +
+      `💰 *Full Service Price:* ${fullPrice}\n` +
+      `⏳ *Remaining Balance:* ${remainingFee}\n\n` +
+      `👤 *CUSTOMER CONTACT DETAILS:*\n` +
+      `📛 *Name:* ${customerInfo.name.trim()}\n` +
+      `📧 *Email:* ${customerInfo.email.trim()}\n` +
+      `📞 *Contact Phone:* ${fullPhone}\n` +
+      `💬 *WhatsApp Number:* ${fullWhatsApp}\n` +
+      `📝 *Notes / Requirements:* ${customerInfo.message.trim() || 'N/A'}\n\n` +
+      `🏦 *COMMERCIAL BANK DEPOSIT DETAILS:*\n` +
+      `🏦 *Bank & Branch:* ${bankDetails.bankName} (${bankDetails.branch})\n` +
+      `🔢 *Account No:* ${bankDetails.accountNumber}\n` +
+      `📌 *Payment Reference Added:* "${activeReference}"\n` +
+      `${slipInfoText}\n\n` +
+      `----------------------------------------\n` +
       `✅ *Please verify the payment slip and confirm my booking request.* Thank you! 🙏`;
 
-    const whatsappUrl = `https://wa.me/${bankDetails.whatsappNumber}?text=${whatsappMessage}`;
+    const whatsappUrl = `https://wa.me/${bankDetails.whatsappNumber}?text=${encodeURIComponent(rawMessage)}`;
 
     setLoading(false);
     setBookingSubmitted(true);
