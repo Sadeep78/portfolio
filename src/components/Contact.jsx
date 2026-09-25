@@ -90,7 +90,7 @@ export default function Contact() {
 
     const formattedText = 
       `📩 *NEW CONTRACT / INQUIRY MESSAGE* 📩%0A` +
-      `━━━━━━━━━━━━━━━━━━━━━━%0A` +
+      `----------------------------------------%0A` +
       `👋 *Hello Sadeep,*%0A` +
       `I came across your portfolio website (https://sadeep.vercel.app) and would like to connect regarding a project, contract, or inquiry:%0A%0A` +
       `👤 *SENDER INFORMATION:*%0A` +
@@ -99,7 +99,7 @@ export default function Contact() {
       `📞 *Phone Number:* ${encodeURIComponent(fullPhone)}%0A%0A` +
       `💬 *MESSAGE / CONTRACT DETAILS:*%0A` +
       `${encodeURIComponent(formData.message.trim())}%0A%0A` +
-      `━━━━━━━━━━━━━━━━━━━━━━%0A` +
+      `----------------------------------------%0A` +
       `🚀 *Looking forward to hearing from you soon!* Thank you! 🙏`;
 
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${formattedText}`;

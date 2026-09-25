@@ -479,7 +479,7 @@ export default function Services() {
 
     const whatsappMessage = 
       `✨ *NEW SERVICE BOOKING REQUEST* ✨%0A` +
-      `━━━━━━━━━━━━━━━━━━━━━━%0A` +
+      `----------------------------------------%0A` +
       `👋 *Hello Sadeep,*%0A` +
       `I have placed a new project booking on your portfolio website (https://sadeep.vercel.app).%0A%0A` +
       `📌 *BOOKED SERVICE DETAILS:*%0A` +
@@ -494,11 +494,11 @@ export default function Services() {
       `💬 *WhatsApp Number:* ${encodeURIComponent(fullWhatsApp)}%0A` +
       `📝 *Notes / Requirements:* ${encodeURIComponent(customerInfo.message.trim() || 'N/A')}%0A%0A` +
       `🏦 *COMMERCIAL BANK DEPOSIT DETAILS:*%0A` +
-      `🏛️ *Bank & Branch:* ${encodeURIComponent(bankDetails.bankName)} (${encodeURIComponent(bankDetails.branch)})%0A` +
+      `🏦 *Bank & Branch:* ${encodeURIComponent(bankDetails.bankName)} (${encodeURIComponent(bankDetails.branch)})%0A` +
       `🔢 *Account No:* ${encodeURIComponent(bankDetails.accountNumber)}%0A` +
-      `🏷️ *Payment Reference Added:* "${encodeURIComponent(activeReference)}"%0A` +
+      `📌 *Payment Reference Added:* "${encodeURIComponent(activeReference)}"%0A` +
       `${slipInfoText}%0A%0A` +
-      `━━━━━━━━━━━━━━━━━━━━━━%0A` +
+      `----------------------------------------%0A` +
       `✅ *Please verify the payment slip and confirm my booking request.* Thank you! 🙏`;
 
     const whatsappUrl = `https://wa.me/${bankDetails.whatsappNumber}?text=${whatsappMessage}`;
