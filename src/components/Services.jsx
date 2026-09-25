@@ -113,14 +113,20 @@ export default function Services() {
 
     const whatsappUrl = `https://wa.me/${bankDetails.whatsappNumber}?text=${whatsappMessage}`;
 
+    setLoading(false);
+    setBookingSubmitted(true);
+
+    // Mobile & Desktop popup-blocker proof navigation
     setTimeout(() => {
-      setLoading(false);
-      setBookingSubmitted(true);
-      window.open(whatsappUrl, '_blank');
+      try {
+        window.location.href = whatsappUrl;
+      } catch (err) {
+        window.open(whatsappUrl, '_blank');
+      }
       setTimeout(() => {
         handleCloseModal();
       }, 3500);
-    }, 600);
+    }, 400);
   };
 
   return (
@@ -240,6 +246,7 @@ export default function Services() {
                         type="text" 
                         placeholder="e.g. Ruwan Silva" 
                         className="form-input"
+                        autoCapitalize="words"
                         style={formErrors.name ? { borderColor: '#ef4444' } : {}}
                         value={customerInfo.name}
                         onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
@@ -251,6 +258,7 @@ export default function Services() {
                       <label className="form-label">Email Address *</label>
                       <input 
                         type="email" 
+                        inputMode="email"
                         placeholder="e.g. ruwan@gmail.com" 
                         className="form-input"
                         style={formErrors.email ? { borderColor: '#ef4444' } : {}}
@@ -265,7 +273,8 @@ export default function Services() {
                   <div className="form-group" style={{ marginBottom: '1rem' }}>
                     <label className="form-label">Contact Phone Number *</label>
                     <input 
-                      type="text" 
+                      type="tel" 
+                      inputMode="tel"
                       placeholder="e.g. 0771234567 or +94 77 123 4567" 
                       className="form-input"
                       style={formErrors.phone ? { borderColor: '#ef4444' } : {}}
@@ -282,7 +291,7 @@ export default function Services() {
                         type="checkbox" 
                         checked={customerInfo.sameAsPhone}
                         onChange={(e) => setCustomerInfo({ ...customerInfo, sameAsPhone: e.target.checked })}
-                        style={{ width: '16px', height: '16px', accentColor: '#25D366' }}
+                        style={{ width: '18px', height: '18px', accentColor: '#25D366' }}
                       />
                       <span>WhatsApp Number is the same as Contact Phone Number</span>
                     </label>
@@ -291,7 +300,8 @@ export default function Services() {
                       <div className="form-group" style={{ marginTop: '0.85rem', marginBottom: 0 }}>
                         <label className="form-label">Separate WhatsApp Number *</label>
                         <input 
-                          type="text" 
+                          type="tel" 
+                          inputMode="tel"
                           placeholder="e.g. +94 70 987 6543" 
                           className="form-input"
                           style={formErrors.whatsapp ? { borderColor: '#ef4444' } : {}}
@@ -361,34 +371,76 @@ export default function Services() {
                       )}
                     </div>
 
-                    {/* Browse Slip File */}
-                    <label className="form-label" style={{ marginBottom: '0.5rem' }}>Upload Bank Deposit / Transfer Slip (Image or PDF) *</label>
-                    <div style={{ border: formErrors.slip ? '2px dashed #ef4444' : '2px dashed var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1.25rem', textAlign: 'center', background: 'var(--bg-secondary)', cursor: 'pointer' }}>
+                    {/* Browse & Tap Slip File (Touch & Desktop Compatible) */}
+                    <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>Upload Bank Deposit / Transfer Slip (Image or PDF) *</label>
+                    <div 
+                      style={{ 
+                        position: 'relative', 
+                        border: formErrors.slip ? '2px dashed #ef4444' : '2px dashed var(--accent-cyan)', 
+                        borderRadius: 'var(--radius-md)', 
+                        padding: '1.5rem 1rem', 
+                        textAlign: 'center', 
+                        background: 'rgba(6, 182, 212, 0.04)', 
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        overflow: 'hidden'
+                      }}
+                    >
                       <input 
                         type="file" 
-                        accept="image/*,.pdf"
+                        accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,.pdf,.jpg,.jpeg,.png,.webp"
                         onChange={handleFileChange}
-                        style={{ display: 'none' }}
+                        style={{ 
+                          position: 'absolute', 
+                          top: 0, 
+                          left: 0, 
+                          width: '100%', 
+                          height: '100%', 
+                          opacity: 0, 
+                          cursor: 'pointer',
+                          zIndex: 10
+                        }}
                         id="slip-upload-input"
+                        aria-label="Upload Bank Deposit or Transfer Slip"
                       />
-                      <label htmlFor="slip-upload-input" style={{ cursor: 'pointer', display: 'block' }}>
-                        <Upload size={28} style={{ color: 'var(--accent-cyan)', margin: '0 auto 0.5rem auto' }} />
-                        <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
-                          {slipFile ? slipFile.name : 'Click here to Browse & Upload Payment Slip from PC'}
+                      
+                      <div style={{ pointerEvents: 'none', position: 'relative', zIndex: 1 }}>
+                        <Upload size={32} style={{ color: 'var(--accent-cyan)', margin: '0 auto 0.6rem auto', display: 'block' }} />
+                        <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+                          {slipFile ? `Selected: ${slipFile.name}` : 'Tap or Click here to Choose & Upload Payment Slip'}
                         </div>
-                        <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                          Supports JPG, PNG, WEBP, or PDF
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                          Supports Photo Gallery, Camera Photo, or PDF File
                         </div>
-                      </label>
+                      </div>
                     </div>
 
-                    {formErrors.slip && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.35rem', display: 'block' }}>{formErrors.slip}</span>}
+                    {slipFile && (
+                      <div style={{ marginTop: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '0.82rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>
+                          ✓ File Ready: {slipFile.name} ({(slipFile.size / 1024).toFixed(0)} KB)
+                        </span>
+                        <button 
+                          type="button" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setSlipFile(null);
+                            setSlipPreview(null);
+                          }}
+                          style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem', background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 'var(--radius-full)', cursor: 'pointer', fontWeight: 600 }}
+                        >
+                          Change / Remove File
+                        </button>
+                      </div>
+                    )}
+
+                    {formErrors.slip && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.4rem', display: 'block' }}>{formErrors.slip}</span>}
 
                     {/* Slip Preview */}
                     {slipPreview && (
                       <div style={{ marginTop: '1rem', textAlign: 'center' }}>
                         <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>Uploaded Slip Image Preview:</span>
-                        <img src={slipPreview} alt="Payment Slip" style={{ maxHeight: '140px', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
+                        <img src={slipPreview} alt="Payment Slip" style={{ maxHeight: '140px', borderRadius: '8px', border: '1px solid var(--border-color)', objectFit: 'contain' }} />
                       </div>
                     )}
                   </div>
@@ -397,7 +449,7 @@ export default function Services() {
                   <button 
                     type="submit" 
                     className="btn btn-primary"
-                    style={{ width: '100%', padding: '0.85rem', backgroundColor: '#25D366', borderColor: '#25D366', color: '#070c18', fontWeight: 800 }}
+                    style={{ width: '100%', padding: '0.9rem', backgroundColor: '#25D366', borderColor: '#25D366', color: '#070c18', fontWeight: 800, minHeight: '48px' }}
                     disabled={loading}
                   >
                     {loading ? (
