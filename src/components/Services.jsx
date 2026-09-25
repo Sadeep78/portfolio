@@ -1,6 +1,29 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Upload, Send, MessageSquare, ArrowRight, X, ShieldCheck, FileText, Building2, Check, AlertCircle, Phone } from 'lucide-react';
+import { CheckCircle2, Upload, Send, MessageSquare, ArrowRight, X, ShieldCheck, FileText, Building2, Check, AlertCircle, Phone, Globe } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
+
+export const countryCodes = [
+  { code: '+94', country: 'Sri Lanka (+94)', flag: '🇱🇰' },
+  { code: '+1', country: 'USA / Canada (+1)', flag: '🇺🇸' },
+  { code: '+44', country: 'UK (+44)', flag: '🇬🇧' },
+  { code: '+61', country: 'Australia (+61)', flag: '🇦🇺' },
+  { code: '+91', country: 'India (+91)', flag: '🇮🇳' },
+  { code: '+971', country: 'UAE (+971)', flag: '🇦🇪' },
+  { code: '+65', country: 'Singapore (+65)', flag: '🇸🇬' },
+  { code: '+974', country: 'Qatar (+974)', flag: '🇶🇦' },
+  { code: '+60', country: 'Malaysia (+60)', flag: '🇲🇾' },
+  { code: '+64', country: 'New Zealand (+64)', flag: '🇳🇿' },
+  { code: '+49', country: 'Germany (+49)', flag: '🇩🇪' },
+  { code: '+33', country: 'France (+33)', flag: '🇫🇷' },
+  { code: '+81', country: 'Japan (+81)', flag: '🇯🇵' },
+  { code: '+82', country: 'South Korea (+82)', flag: '🇰🇷' },
+  { code: '+966', country: 'Saudi Arabia (+966)', flag: '🇸🇦' },
+  { code: '+968', country: 'Oman (+968)', flag: '🇴🇲' },
+  { code: '+965', country: 'Kuwait (+965)', flag: '🇰🇼' },
+  { code: '+973', country: 'Bahrain (+973)', flag: '🇧🇭' },
+  { code: '+39', country: 'Italy (+39)', flag: '🇮🇹' },
+  { code: '+86', country: 'China (+86)', flag: '🇨🇳' }
+];
 
 export default function Services() {
   const { services, bankDetails } = portfolioData;
@@ -10,8 +33,10 @@ export default function Services() {
   const [customerInfo, setCustomerInfo] = useState({ 
     name: '', 
     email: '', 
+    countryCode: '+94',
     phone: '', 
     sameAsPhone: true,
+    whatsappCountryCode: '+94',
     whatsapp: '', 
     message: '' 
   });
@@ -20,12 +45,74 @@ export default function Services() {
   const [slipPreview, setSlipPreview] = useState(null);
 
   const [formErrors, setFormErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
   const [bookingSubmitted, setBookingSubmitted] = useState(false);
+
+  // Real-time Single Field Validation
+  const validateField = (fieldName, fieldValue, currentInfo = customerInfo, currentYes = confirmYes, currentSlip = slipFile) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const nameRegex = /^[a-zA-Z\s\.\'-]+$/;
+
+    if (fieldName === 'name') {
+      if (!fieldValue || !fieldValue.trim()) return 'Please enter your full name.';
+      if (fieldValue.trim().length < 2) return 'Name must be at least 2 characters long.';
+      if (/\d/.test(fieldValue)) return 'Name cannot contain numbers. Please use letters only.';
+      if (!nameRegex.test(fieldValue.trim())) return 'Name should contain letters and spaces only.';
+      return null;
+    }
+
+    if (fieldName === 'email') {
+      if (!fieldValue || !fieldValue.trim()) return 'Please enter your email address.';
+      if (!emailRegex.test(fieldValue.trim())) {
+        return 'Please enter a complete email address (e.g. name@gmail.com, name@outlook.com).';
+      }
+      return null;
+    }
+
+    if (fieldName === 'phone') {
+      const clean = (fieldValue || '').replace(/[\s\-\(\)]/g, '');
+      if (!clean) return 'Please enter your contact phone number.';
+      if (!/^\d+$/.test(clean)) return 'Phone number must contain digits only.';
+      if (clean.length < 7 || clean.length > 12) return 'Phone number must be between 7 and 12 digits.';
+      return null;
+    }
+
+    if (fieldName === 'whatsapp') {
+      if (!currentInfo.sameAsPhone) {
+        const clean = (fieldValue || '').replace(/[\s\-\(\)]/g, '');
+        if (!clean) return 'Please enter your separate WhatsApp number.';
+        if (!/^\d+$/.test(clean)) return 'WhatsApp number must contain digits only.';
+        if (clean.length < 7 || clean.length > 12) return 'WhatsApp number must be between 7 and 12 digits.';
+      }
+      return null;
+    }
+
+    if (fieldName === 'confirmYes') {
+      if (!fieldValue || !fieldValue.trim() || fieldValue.trim().toUpperCase() !== 'YES') {
+        return 'Please type "YES" to confirm you added your Full Name & Phone Number as Payment Reference.';
+      }
+      return null;
+    }
+
+    if (fieldName === 'slip') {
+      if (!currentSlip) return 'Please upload your bank transfer deposit slip file (Photo or PDF).';
+      return null;
+    }
+
+    return null;
+  };
+
+  const markTouchedAndValidate = (field, value) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    const err = validateField(field, value);
+    setFormErrors(prev => ({ ...prev, [field]: err }));
+  };
 
   const handleOpenModal = (service) => {
     setSelectedService(service);
     setFormErrors({});
+    setTouched({});
     setBookingSubmitted(false);
   };
 
@@ -33,14 +120,25 @@ export default function Services() {
     setSelectedService(null);
     setSlipFile(null);
     setSlipPreview(null);
-    setCustomerInfo({ name: '', email: '', phone: '', sameAsPhone: true, whatsapp: '', message: '' });
+    setCustomerInfo({ 
+      name: '', 
+      email: '', 
+      countryCode: '+94', 
+      phone: '', 
+      sameAsPhone: true, 
+      whatsappCountryCode: '+94', 
+      whatsapp: '', 
+      message: '' 
+    });
     setConfirmYes('');
     setFormErrors({});
+    setTouched({});
     setBookingSubmitted(false);
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    setTouched(prev => ({ ...prev, slip: true }));
     if (file) {
       setSlipFile(file);
       if (file.type.startsWith('image/')) {
@@ -48,53 +146,51 @@ export default function Services() {
         reader.onloadend = () => setSlipPreview(reader.result);
         reader.readAsDataURL(file);
       } else {
-        setSlipPreview(null); // PDF or non-image
+        setSlipPreview(null);
       }
-      if (formErrors.slip) {
-        setFormErrors({ ...formErrors, slip: null });
-      }
+      const err = validateField('slip', file, customerInfo, confirmYes, file);
+      setFormErrors(prev => ({ ...prev, slip: err }));
+    } else {
+      setSlipFile(null);
+      setSlipPreview(null);
+      setFormErrors(prev => ({ ...prev, slip: 'Please select a slip file.' }));
     }
   };
 
-  const validateForm = () => {
-    const errors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const validateAllForm = () => {
+    const errors = {
+      name: validateField('name', customerInfo.name),
+      email: validateField('email', customerInfo.email),
+      phone: validateField('phone', customerInfo.phone),
+      whatsapp: validateField('whatsapp', customerInfo.whatsapp),
+      confirmYes: validateField('confirmYes', confirmYes),
+      slip: validateField('slip', slipFile)
+    };
 
-    if (!customerInfo.name.trim()) {
-      errors.name = 'Please enter your name.';
-    } else if (/\d/.test(customerInfo.name)) {
-      errors.name = 'Name cannot contain numbers.';
-    }
+    const newTouched = {
+      name: true,
+      email: true,
+      phone: true,
+      whatsapp: !customerInfo.sameAsPhone,
+      confirmYes: true,
+      slip: true
+    };
 
-    if (!customerInfo.email.trim()) {
-      errors.email = 'Please enter your email address.';
-    } else if (!emailRegex.test(customerInfo.email.trim())) {
-      errors.email = 'Please enter a valid email address.';
-    }
+    setTouched(newTouched);
+    
+    // Filter out null errors
+    const activeErrors = {};
+    Object.keys(errors).forEach(k => {
+      if (errors[k]) activeErrors[k] = errors[k];
+    });
 
-    if (!customerInfo.phone.trim()) {
-      errors.phone = 'Please enter your contact phone number.';
-    }
-
-    if (!customerInfo.sameAsPhone && !customerInfo.whatsapp.trim()) {
-      errors.whatsapp = 'Please enter your separate WhatsApp number.';
-    }
-
-    if (!slipFile) {
-      errors.slip = 'Please upload your bank transfer deposit slip file.';
-    }
-
-    if (!confirmYes.trim() || confirmYes.trim().toUpperCase() !== 'YES') {
-      errors.confirmYes = 'Please type YES to confirm you entered your Full Name & Phone Number as the Payment Reference.';
-    }
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    setFormErrors(activeErrors);
+    return Object.keys(activeErrors).length === 0;
   };
 
   const handleBookingSubmit = (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateAllForm()) return;
 
     setLoading(true);
 
@@ -103,13 +199,16 @@ export default function Services() {
     const fullPrice = selectedService.fullPrice;
     const remainingFee = selectedService.remainingPrice;
 
-    const activePhone = customerInfo.phone.trim();
-    const activeWhatsApp = customerInfo.sameAsPhone ? activePhone : customerInfo.whatsapp.trim();
-    const activeReference = `${customerInfo.name.trim()} (${activePhone})`;
+    const fullPhone = `${customerInfo.countryCode} ${customerInfo.phone.trim()}`;
+    const fullWhatsApp = customerInfo.sameAsPhone 
+      ? fullPhone 
+      : `${customerInfo.whatsappCountryCode} ${customerInfo.whatsapp.trim()}`;
+
+    const activeReference = `${customerInfo.name.trim()} (${fullPhone})`;
 
     const paymentMethodText = `🏦 *Payment Method:* Commercial Bank Slip Upload%0A📌 *Bank Details:* ${bankDetails.bankName} (${bankDetails.branch}) - Acc: ${bankDetails.accountNumber}%0A🏷️ *Payment Reference Used:* ${encodeURIComponent(activeReference)}%0A📎 *Slip File Attached:* ${encodeURIComponent(slipFile ? slipFile.name : 'Uploaded')}`;
 
-    const whatsappMessage = `Hello Sadeep,%0A%0AI have booked a service on your portfolio website and submitted my advance payment details:%0A%0A🎯 *Service Booked:* ${encodeURIComponent(serviceTitle)}%0A💰 *Advance Fee Paid:* ${encodeURIComponent(advanceFee)}%0A💵 *Full Service Price:* ${encodeURIComponent(fullPrice)}%0A⏳ *Remaining Balance:* ${encodeURIComponent(remainingFee)} (Payable within 1 week of delivery)%0A%0A👤 *Customer Name:* ${encodeURIComponent(customerInfo.name.trim())}%0A📧 *Email:* ${encodeURIComponent(customerInfo.email.trim())}%0A📞 *Contact Phone:* ${encodeURIComponent(activePhone)}%0A💬 *WhatsApp Number:* ${encodeURIComponent(activeWhatsApp)}%0A💬 *Additional Notes:* ${encodeURIComponent(customerInfo.message.trim() || 'N/A')}%0A%0A${paymentMethodText}%0A%0APlease verify and confirm my booking request. Thank you!`;
+    const whatsappMessage = `Hello Sadeep,%0A%0AI have booked a service on your portfolio website and submitted my advance payment details:%0A%0A🎯 *Service Booked:* ${encodeURIComponent(serviceTitle)}%0A💰 *Advance Fee Paid:* ${encodeURIComponent(advanceFee)}%0A💵 *Full Service Price:* ${encodeURIComponent(fullPrice)}%0A⏳ *Remaining Balance:* ${encodeURIComponent(remainingFee)} (Payable within 1 week of delivery)%0A%0A👤 *Customer Name:* ${encodeURIComponent(customerInfo.name.trim())}%0A📧 *Email:* ${encodeURIComponent(customerInfo.email.trim())}%0A📞 *Contact Phone:* ${encodeURIComponent(fullPhone)}%0A💬 *WhatsApp Number:* ${encodeURIComponent(fullWhatsApp)}%0A💬 *Additional Notes:* ${encodeURIComponent(customerInfo.message.trim() || 'N/A')}%0A%0A${paymentMethodText}%0A%0APlease verify and confirm my booking request. Thank you!`;
 
     const whatsappUrl = `https://wa.me/${bankDetails.whatsappNumber}?text=${whatsappMessage}`;
 
@@ -240,48 +339,142 @@ export default function Services() {
                   </h4>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+                    
+                    {/* Full Name Field */}
                     <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label">Full Name *</label>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                        <label className="form-label" style={{ margin: 0 }}>Full Name *</label>
+                        {touched.name && !formErrors.name && (
+                          <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <CheckCircle2 size={13} /> Valid Name
+                          </span>
+                        )}
+                      </div>
                       <input 
                         type="text" 
                         placeholder="e.g. Ruwan Silva" 
                         className="form-input"
                         autoCapitalize="words"
-                        style={formErrors.name ? { borderColor: '#ef4444' } : {}}
+                        style={
+                          touched.name && formErrors.name
+                            ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' }
+                            : touched.name && !formErrors.name && customerInfo.name
+                            ? { borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.06)' }
+                            : {}
+                        }
                         value={customerInfo.name}
-                        onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCustomerInfo({ ...customerInfo, name: val });
+                          markTouchedAndValidate('name', val);
+                        }}
+                        onBlur={() => markTouchedAndValidate('name', customerInfo.name)}
                       />
-                      {formErrors.name && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>{formErrors.name}</span>}
+                      {touched.name && formErrors.name && (
+                        <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <AlertCircle size={13} />
+                          <span>{formErrors.name}</span>
+                        </span>
+                      )}
                     </div>
 
+                    {/* Email Address Field */}
                     <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label">Email Address *</label>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                        <label className="form-label" style={{ margin: 0 }}>Email Address *</label>
+                        {touched.email && !formErrors.email && (
+                          <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <CheckCircle2 size={13} /> Valid Email
+                          </span>
+                        )}
+                      </div>
                       <input 
                         type="email" 
                         inputMode="email"
-                        placeholder="e.g. ruwan@gmail.com" 
+                        placeholder="e.g. ruwan@gmail.com, ruwan@outlook.com" 
                         className="form-input"
-                        style={formErrors.email ? { borderColor: '#ef4444' } : {}}
+                        style={
+                          touched.email && formErrors.email
+                            ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' }
+                            : touched.email && !formErrors.email && customerInfo.email
+                            ? { borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.06)' }
+                            : {}
+                        }
                         value={customerInfo.email}
-                        onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCustomerInfo({ ...customerInfo, email: val });
+                          markTouchedAndValidate('email', val);
+                        }}
+                        onBlur={() => markTouchedAndValidate('email', customerInfo.email)}
                       />
-                      {formErrors.email && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>{formErrors.email}</span>}
+                      {touched.email && formErrors.email && (
+                        <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <AlertCircle size={13} />
+                          <span>{formErrors.email}</span>
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  {/* Phone & Separate WhatsApp Input */}
+                  {/* Phone Number Field with Country Code */}
                   <div className="form-group" style={{ marginBottom: '1rem' }}>
-                    <label className="form-label">Contact Phone Number *</label>
-                    <input 
-                      type="tel" 
-                      inputMode="tel"
-                      placeholder="e.g. 0771234567 or +94 77 123 4567" 
-                      className="form-input"
-                      style={formErrors.phone ? { borderColor: '#ef4444' } : {}}
-                      value={customerInfo.phone}
-                      onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-                    />
-                    {formErrors.phone && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>{formErrors.phone}</span>}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                      <label className="form-label" style={{ margin: 0 }}>Contact Phone Number (Country Code + Number) *</label>
+                      {touched.phone && !formErrors.phone && (
+                        <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <CheckCircle2 size={13} /> Valid Phone
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <select
+                        value={customerInfo.countryCode}
+                        onChange={(e) => {
+                          const code = e.target.value;
+                          const updated = { ...customerInfo, countryCode: code };
+                          setCustomerInfo(updated);
+                          if (touched.phone) markTouchedAndValidate('phone', customerInfo.phone);
+                        }}
+                        className="form-input"
+                        style={{ width: '145px', flexShrink: 0, fontWeight: 700, color: 'var(--accent-cyan)', paddingRight: '0.5rem' }}
+                      >
+                        {countryCodes.map((c, idx) => (
+                          <option key={idx} value={c.code} style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
+                            {c.flag} {c.code} ({c.country.split(' ')[0]})
+                          </option>
+                        ))}
+                      </select>
+
+                      <input 
+                        type="tel" 
+                        inputMode="tel"
+                        placeholder="e.g. 771234567" 
+                        className="form-input"
+                        style={{
+                          flexGrow: 1,
+                          ...(touched.phone && formErrors.phone
+                            ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' }
+                            : touched.phone && !formErrors.phone && customerInfo.phone
+                            ? { borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.06)' }
+                            : {})
+                        }}
+                        value={customerInfo.phone}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCustomerInfo({ ...customerInfo, phone: val });
+                          markTouchedAndValidate('phone', val);
+                        }}
+                        onBlur={() => markTouchedAndValidate('phone', customerInfo.phone)}
+                      />
+                    </div>
+                    {touched.phone && formErrors.phone && (
+                      <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <AlertCircle size={13} />
+                        <span>{formErrors.phone}</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Checkbox: WhatsApp same as Phone */}
@@ -298,17 +491,57 @@ export default function Services() {
 
                     {!customerInfo.sameAsPhone && (
                       <div className="form-group" style={{ marginTop: '0.85rem', marginBottom: 0 }}>
-                        <label className="form-label">Separate WhatsApp Number *</label>
-                        <input 
-                          type="tel" 
-                          inputMode="tel"
-                          placeholder="e.g. +94 70 987 6543" 
-                          className="form-input"
-                          style={formErrors.whatsapp ? { borderColor: '#ef4444' } : {}}
-                          value={customerInfo.whatsapp}
-                          onChange={(e) => setCustomerInfo({ ...customerInfo, whatsapp: e.target.value })}
-                        />
-                        {formErrors.whatsapp && <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'block' }}>{formErrors.whatsapp}</span>}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                          <label className="form-label" style={{ margin: 0 }}>Separate WhatsApp Number *</label>
+                          {touched.whatsapp && !formErrors.whatsapp && (
+                            <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <CheckCircle2 size={13} /> Valid WhatsApp
+                            </span>
+                          )}
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <select
+                            value={customerInfo.whatsappCountryCode}
+                            onChange={(e) => setCustomerInfo({ ...customerInfo, whatsappCountryCode: e.target.value })}
+                            className="form-input"
+                            style={{ width: '145px', flexShrink: 0, fontWeight: 700, color: 'var(--accent-cyan)' }}
+                          >
+                            {countryCodes.map((c, idx) => (
+                              <option key={idx} value={c.code} style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
+                                {c.flag} {c.code}
+                              </option>
+                            ))}
+                          </select>
+
+                          <input 
+                            type="tel" 
+                            inputMode="tel"
+                            placeholder="e.g. 709876543" 
+                            className="form-input"
+                            style={{
+                              flexGrow: 1,
+                              ...(touched.whatsapp && formErrors.whatsapp
+                                ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' }
+                                : touched.whatsapp && !formErrors.whatsapp && customerInfo.whatsapp
+                                ? { borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.06)' }
+                                : {})
+                            }}
+                            value={customerInfo.whatsapp}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setCustomerInfo({ ...customerInfo, whatsapp: val });
+                              markTouchedAndValidate('whatsapp', val);
+                            }}
+                            onBlur={() => markTouchedAndValidate('whatsapp', customerInfo.whatsapp)}
+                          />
+                        </div>
+                        {touched.whatsapp && formErrors.whatsapp && (
+                          <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <AlertCircle size={13} />
+                            <span>{formErrors.whatsapp}</span>
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>
@@ -340,7 +573,7 @@ export default function Services() {
 
                       <span style={{ color: 'var(--text-muted)' }}>Payment Reference:</span>
                       <strong style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>
-                        {customerInfo.name ? `${customerInfo.name} - ${customerInfo.phone || 'Phone'}` : 'Your Full Name & Phone Number (e.g. Ruwan Silva - 0771234567)'}
+                        {customerInfo.name ? `${customerInfo.name} - ${customerInfo.countryCode} ${customerInfo.phone || 'Phone'}` : 'Your Full Name & Phone Number (e.g. Ruwan Silva - +94 771234567)'}
                       </strong>
                     </div>
 
@@ -350,20 +583,41 @@ export default function Services() {
 
                     {/* Mandatory YES Confirmation Field */}
                     <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                      <label className="form-label" htmlFor="confirm-yes">Type "YES" to confirm you added your Full Name & Phone Number as Payment Reference *</label>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                        <label className="form-label" htmlFor="confirm-yes" style={{ margin: 0 }}>Type "YES" to confirm you added Payment Reference *</label>
+                        {touched.confirmYes && !formErrors.confirmYes && (
+                          <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <CheckCircle2 size={13} /> Confirmed YES
+                          </span>
+                        )}
+                      </div>
                       <input
                         type="text"
                         id="confirm-yes"
                         placeholder='Type "YES" to confirm'
                         className="form-input"
-                        style={formErrors.confirmYes ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' } : {}}
+                        style={
+                          touched.confirmYes && formErrors.confirmYes
+                            ? { borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.06)' }
+                            : touched.confirmYes && !formErrors.confirmYes && confirmYes
+                            ? { borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.06)' }
+                            : {}
+                        }
                         value={confirmYes}
                         onChange={(e) => {
-                          setConfirmYes(e.target.value);
-                          if (formErrors.confirmYes) setFormErrors({ ...formErrors, confirmYes: null });
+                          const val = e.target.value;
+                          setConfirmYes(val);
+                          setTouched(prev => ({ ...prev, confirmYes: true }));
+                          const err = validateField('confirmYes', val);
+                          setFormErrors(prev => ({ ...prev, confirmYes: err }));
+                        }}
+                        onBlur={() => {
+                          setTouched(prev => ({ ...prev, confirmYes: true }));
+                          const err = validateField('confirmYes', confirmYes);
+                          setFormErrors(prev => ({ ...prev, confirmYes: err }));
                         }}
                       />
-                      {formErrors.confirmYes && (
+                      {touched.confirmYes && formErrors.confirmYes && (
                         <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                           <AlertCircle size={14} />
                           <span>{formErrors.confirmYes}</span>
@@ -372,15 +626,27 @@ export default function Services() {
                     </div>
 
                     {/* Browse & Tap Slip File (Touch & Desktop Compatible) */}
-                    <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>Upload Bank Deposit / Transfer Slip (Image or PDF) *</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                      <label className="form-label" style={{ margin: 0 }}>Upload Bank Deposit / Transfer Slip (Image or PDF) *</label>
+                      {touched.slip && !formErrors.slip && slipFile && (
+                        <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <CheckCircle2 size={13} /> Slip Ready
+                        </span>
+                      )}
+                    </div>
+
                     <div 
                       style={{ 
                         position: 'relative', 
-                        border: formErrors.slip ? '2px dashed #ef4444' : '2px dashed var(--accent-cyan)', 
+                        border: touched.slip && formErrors.slip
+                          ? '2px dashed #ef4444' 
+                          : touched.slip && !formErrors.slip && slipFile
+                          ? '2px dashed #10b981'
+                          : '2px dashed var(--accent-cyan)', 
                         borderRadius: 'var(--radius-md)', 
                         padding: '1.5rem 1rem', 
                         textAlign: 'center', 
-                        background: 'rgba(6, 182, 212, 0.04)', 
+                        background: touched.slip && !formErrors.slip && slipFile ? 'rgba(16, 185, 129, 0.06)' : 'rgba(6, 182, 212, 0.04)', 
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                         overflow: 'hidden'
@@ -405,7 +671,7 @@ export default function Services() {
                       />
                       
                       <div style={{ pointerEvents: 'none', position: 'relative', zIndex: 1 }}>
-                        <Upload size={32} style={{ color: 'var(--accent-cyan)', margin: '0 auto 0.6rem auto', display: 'block' }} />
+                        <Upload size={32} style={{ color: slipFile ? '#10b981' : 'var(--accent-cyan)', margin: '0 auto 0.6rem auto', display: 'block' }} />
                         <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
                           {slipFile ? `Selected: ${slipFile.name}` : 'Tap or Click here to Choose & Upload Payment Slip'}
                         </div>
@@ -417,7 +683,7 @@ export default function Services() {
 
                     {slipFile && (
                       <div style={{ marginTop: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '0.82rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>
+                        <span style={{ fontSize: '0.82rem', color: '#10b981', fontWeight: 600 }}>
                           ✓ File Ready: {slipFile.name} ({(slipFile.size / 1024).toFixed(0)} KB)
                         </span>
                         <button 
@@ -426,6 +692,7 @@ export default function Services() {
                             e.preventDefault();
                             setSlipFile(null);
                             setSlipPreview(null);
+                            setFormErrors(prev => ({ ...prev, slip: 'Please select a payment slip file.' }));
                           }}
                           style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem', background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 'var(--radius-full)', cursor: 'pointer', fontWeight: 600 }}
                         >
@@ -434,7 +701,12 @@ export default function Services() {
                       </div>
                     )}
 
-                    {formErrors.slip && <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.4rem', display: 'block' }}>{formErrors.slip}</span>}
+                    {touched.slip && formErrors.slip && (
+                      <span style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <AlertCircle size={13} />
+                        <span>{formErrors.slip}</span>
+                      </span>
+                    )}
 
                     {/* Slip Preview */}
                     {slipPreview && (
