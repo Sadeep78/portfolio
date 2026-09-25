@@ -28,10 +28,33 @@ export default function Navbar({ theme, toggleTheme }) {
     { label: 'Contact', href: '#contact' },
   ];
 
+  const handleNavClick = (e, href) => {
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      setMobileOpen(false);
+      if (href === '#') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      const targetElement = document.querySelector(href);
+      if (targetElement) {
+        const navHeight = 70;
+        const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - navHeight;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+        window.history.pushState(null, '', href);
+      }
+    }
+  };
+
   return (
     <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="container navbar-container">
-        <a href="#" className="logo">
+        <a href="#" className="logo" onClick={(e) => handleNavClick(e, '#')}>
           <div className="logo-avatar-wrapper">
             <img src="/sadeep-profile.jpg" alt="Sadeep" className="logo-avatar-img" />
           </div>
@@ -40,7 +63,12 @@ export default function Navbar({ theme, toggleTheme }) {
 
         <nav className="nav-links">
           {navLinks.map((link, idx) => (
-            <a key={idx} href={link.href} className="nav-link">
+            <a 
+              key={idx} 
+              href={link.href} 
+              className="nav-link"
+              onClick={(e) => handleNavClick(e, link.href)}
+            >
               {link.label}
             </a>
           ))}
@@ -56,7 +84,11 @@ export default function Navbar({ theme, toggleTheme }) {
             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
-          <a href="#contact" className="btn btn-primary btn-sm shimmer-btn">
+          <a 
+            href="#contact" 
+            className="btn btn-primary btn-sm shimmer-btn"
+            onClick={(e) => handleNavClick(e, '#contact')}
+          >
             <span>Get in Touch</span>
             <ArrowUpRight size={16} />
           </a>
@@ -79,7 +111,7 @@ export default function Navbar({ theme, toggleTheme }) {
               key={idx} 
               href={link.href} 
               className="nav-link"
-              onClick={() => setMobileOpen(false)}
+              onClick={(e) => handleNavClick(e, link.href)}
             >
               {link.label}
             </a>
@@ -87,7 +119,7 @@ export default function Navbar({ theme, toggleTheme }) {
           <a 
             href="#contact" 
             className="btn btn-primary"
-            onClick={() => setMobileOpen(false)}
+            onClick={(e) => handleNavClick(e, '#contact')}
           >
             Get in Touch
           </a>

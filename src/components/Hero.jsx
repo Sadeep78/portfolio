@@ -41,6 +41,24 @@ export default function Hero() {
     return () => clearTimeout(timer);
   }, [displayText, isDeleting, currentRoleIndex]);
 
+  const handleNavClick = (e, href) => {
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      const targetElement = document.querySelector(href);
+      if (targetElement) {
+        const navHeight = 70;
+        const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - navHeight;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+        window.history.pushState(null, '', href);
+      }
+    }
+  };
+
   return (
     <section className="hero-section" id="hero">
       {/* Subtle Ambient Background Mesh */}
@@ -67,7 +85,12 @@ export default function Hero() {
           </p>
 
           <div className="hero-ctas">
-            <a href="#services" className="btn btn-primary shimmer-btn" style={{ backgroundColor: '#25D366', borderColor: '#25D366', color: '#070c18', fontWeight: 800 }}>
+            <a 
+              href="#services" 
+              onClick={(e) => handleNavClick(e, '#services')}
+              className="btn btn-primary shimmer-btn" 
+              style={{ backgroundColor: '#25D366', borderColor: '#25D366', color: '#070c18', fontWeight: 800 }}
+            >
               <span>Services & Booking</span>
               <ArrowRight size={18} />
             </a>
@@ -77,7 +100,11 @@ export default function Hero() {
               <span>Download CV</span>
             </a>
 
-            <a href="#projects" className="btn btn-secondary">
+            <a 
+              href="#projects" 
+              onClick={(e) => handleNavClick(e, '#projects')}
+              className="btn btn-secondary"
+            >
               <span>View Projects</span>
             </a>
           </div>
