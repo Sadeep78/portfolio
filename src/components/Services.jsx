@@ -48,6 +48,48 @@ export const countryCodes = [
   { code: '+86', country: 'China (+86)', flag: '🇨🇳' }
 ];
 
+export const blockedDomains = [
+  'dceu.com', 'test.com', 'example.com', 'fake.com', 'temp.com',
+  'mailinator.com', 'yopmail.com', '10minutemail.com', 'dispostable.com',
+  'trashmail.com', 'guerrillamail.com', 'tempmail.com', 'throwaway.com'
+];
+
+export const validTlds = [
+  'com', 'org', 'net', 'edu', 'gov', 'io', 'co', 'lk', 'uk', 'us', 'info',
+  'biz', 'tech', 'ai', 'dev', 'me', 'app', 'ca', 'au', 'in', 'de', 'fr', 'jp',
+  'kr', 'sa', 'ae', 'online', 'site', 'store', 'xyz', 'global', 'cloud'
+];
+
+export const validateEmailStrict = (email) => {
+  if (!email || !email.trim()) return 'Please enter your email address.';
+  const trimmed = email.trim().toLowerCase();
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,10})$/;
+  const match = trimmed.match(emailRegex);
+  if (!match) {
+    return 'Please enter a complete email address (e.g. ruwan@gmail.com).';
+  }
+
+  const domain = match[1];
+  const domainParts = domain.split('.');
+  const tld = domainParts.pop();
+  const domainBody = domainParts.join('.');
+
+  if (blockedDomains.includes(domain)) {
+    return 'Disposable or test email domain detected. Please enter your genuine email (e.g. ruwan@gmail.com).';
+  }
+
+  if (domainBody.length < 2) {
+    return 'Invalid email domain. Please enter a valid email (e.g. ruwan@gmail.com).';
+  }
+
+  if (!validTlds.includes(tld)) {
+    return 'Unrecognized domain extension. Please use a standard email address (e.g. ruwan@gmail.com, ruwan@outlook.com).';
+  }
+
+  return null;
+};
+
 export const validatePhoneByCountry = (code, rawNumber) => {
   if (!rawNumber || !rawNumber.trim()) return 'Please enter your phone number.';
   
@@ -69,6 +111,119 @@ export const validatePhoneByCountry = (code, rawNumber) => {
   }
   return null;
 };
+
+// Searchable & Typable Country Code Select Component
+export function SearchableCountrySelect({ value, onChange, style }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const selectedItem = countryCodes.find(c => c.code === value) || countryCodes[0];
+
+  const filtered = countryCodes.filter(c => 
+    c.code.toLowerCase().includes(search.toLowerCase()) ||
+    c.country.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div style={{ position: 'relative', width: '145px', flexShrink: 0, ...style }}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="form-input"
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justify: 'space-between',
+          padding: '0.85rem 0.65rem',
+          fontWeight: 700,
+          color: 'var(--accent-cyan)',
+          backgroundColor: 'var(--bg-tertiary)',
+          cursor: 'pointer',
+          border: '1px solid var(--border-color)',
+          borderRadius: 'var(--radius-sm)'
+        }}
+      >
+        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {selectedItem.flag} {selectedItem.code}
+        </span>
+        <span style={{ fontSize: '0.65rem', marginLeft: '0.2rem', opacity: 0.7 }}>▼</span>
+      </button>
+
+      {isOpen && (
+        <div 
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            width: '240px',
+            maxHeight: '260px',
+            backgroundColor: 'var(--bg-secondary)',
+            border: '1px solid var(--accent-cyan)',
+            borderRadius: 'var(--radius-md)',
+            boxShadow: '0 12px 30px rgba(0,0,0,0.85)',
+            zIndex: 200,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden'
+          }}
+        >
+          <div style={{ padding: '0.5rem', borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-tertiary)' }}>
+            <input 
+              type="text"
+              placeholder="Search +94, 94, Sri Lanka..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              autoFocus
+              style={{
+                width: '100%',
+                padding: '0.4rem 0.6rem',
+                fontSize: '0.82rem',
+                borderRadius: 'var(--radius-sm)',
+                backgroundColor: 'var(--bg-primary)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-color)',
+                outline: 'none'
+              }}
+            />
+          </div>
+
+          <div style={{ overflowY: 'auto', flexGrow: 1, padding: '0.2rem 0' }}>
+            {filtered.length > 0 ? (
+              filtered.map((c, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => {
+                    onChange(c.code);
+                    setIsOpen(false);
+                    setSearch('');
+                  }}
+                  style={{
+                    padding: '0.5rem 0.75rem',
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justify: 'space-between',
+                    backgroundColor: c.code === value ? 'rgba(6, 182, 212, 0.2)' : 'transparent',
+                    color: c.code === value ? 'var(--accent-cyan)' : 'var(--text-primary)'
+                  }}
+                >
+                  <span>{c.flag} {c.country.split(' ')[0]}</span>
+                  <strong style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--accent-cyan)' }}>{c.code}</strong>
+                </div>
+              ))
+            ) : (
+              <div style={{ padding: '0.75rem', fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+                No country found for "{search}"
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Services() {
   const { services, bankDetails } = portfolioData;
@@ -93,11 +248,16 @@ export default function Services() {
   const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
   const [bookingSubmitted, setBookingSubmitted] = useState(false);
-  const [copiedRef, setCopiedRef] = useState(false);
+  const [copiedField, setCopiedField] = useState(null);
+
+  const handleCopyBankInfo = (text, fieldKey) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldKey);
+    setTimeout(() => setCopiedField(null), 2500);
+  };
 
   // Real-time Single Field Validation
   const validateField = (fieldName, fieldValue, currentInfo = customerInfo, currentYes = confirmYes, currentSlip = slipFile) => {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const nameRegex = /^[a-zA-Z\s\.\'-]+$/;
 
     if (fieldName === 'name') {
@@ -113,11 +273,7 @@ export default function Services() {
     }
 
     if (fieldName === 'email') {
-      if (!fieldValue || !fieldValue.trim()) return 'Please enter your email address.';
-      if (!emailRegex.test(fieldValue.trim())) {
-        return 'Please enter a complete email address (e.g. ruwan@gmail.com).';
-      }
-      return null;
+      return validateEmailStrict(fieldValue);
     }
 
     if (fieldName === 'phone') {
@@ -472,23 +628,14 @@ export default function Services() {
                     </div>
 
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <select
+                      <SearchableCountrySelect
                         value={customerInfo.countryCode}
-                        onChange={(e) => {
-                          const code = e.target.value;
+                        onChange={(code) => {
                           const updated = { ...customerInfo, countryCode: code };
                           setCustomerInfo(updated);
                           if (touched.phone) markTouchedAndValidate('phone', customerInfo.phone);
                         }}
-                        className="form-input"
-                        style={{ width: '145px', flexShrink: 0, fontWeight: 700, color: 'var(--accent-cyan)', paddingRight: '0.5rem' }}
-                      >
-                        {countryCodes.map((c, idx) => (
-                          <option key={idx} value={c.code} style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
-                            {c.flag} {c.code} ({c.country.split(' ')[0]})
-                          </option>
-                        ))}
-                      </select>
+                      />
 
                       <input 
                         type="tel" 
@@ -544,18 +691,10 @@ export default function Services() {
                         </div>
 
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          <select
+                          <SearchableCountrySelect
                             value={customerInfo.whatsappCountryCode}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, whatsappCountryCode: e.target.value })}
-                            className="form-input"
-                            style={{ width: '145px', flexShrink: 0, fontWeight: 700, color: 'var(--accent-cyan)' }}
-                          >
-                            {countryCodes.map((c, idx) => (
-                              <option key={idx} value={c.code} style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
-                                {c.flag} {c.code}
-                              </option>
-                            ))}
-                          </select>
+                            onChange={(code) => setCustomerInfo({ ...customerInfo, whatsappCountryCode: code })}
+                          />
 
                           <input 
                             type="tel" 
@@ -601,64 +740,96 @@ export default function Services() {
                       <span>Commercial Bank Transfer Details:</span>
                     </div>
 
-                    <div style={{ fontSize: '0.85rem', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.5rem 1rem', marginBottom: '1rem', background: 'var(--bg-secondary)', padding: '0.85rem', borderRadius: 'var(--radius-sm)', alignItems: 'center' }}>
-                      <span style={{ color: 'var(--text-muted)' }}>Account Name:</span>
-                      <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.accountName}</strong>
-
-                      <span style={{ color: 'var(--text-muted)' }}>Bank:</span>
-                      <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.bankName}</strong>
-
-                      <span style={{ color: 'var(--text-muted)' }}>Branch:</span>
-                      <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.branch}</strong>
-
-                      <span style={{ color: 'var(--text-muted)' }}>Account No:</span>
-                      <strong style={{ color: '#25D366', fontFamily: 'var(--font-mono)', fontSize: '0.95rem' }}>{bankDetails.accountNumber}</strong>
-
-                      <span style={{ color: 'var(--text-muted)' }}>Payment Reference:</span>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                        <strong style={{ color: 'var(--accent-cyan)', fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}>
-                          "{customerInfo.name.trim() && customerInfo.phone.trim() 
-                            ? `${customerInfo.name.trim()},${customerInfo.countryCode}${customerInfo.phone.trim().replace(/^0/, '')}`
-                            : 'Sadeep,+94705922792'}"
-                        </strong>
+                    <div style={{ fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1rem', background: 'var(--bg-secondary)', padding: '0.95rem', borderRadius: 'var(--radius-sm)' }}>
+                      
+                      {/* Account Name */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <div>
+                          <span style={{ color: 'var(--text-muted)', marginRight: '0.5rem' }}>Account Name:</span>
+                          <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.accountName}</strong>
+                        </div>
                         <button
                           type="button"
-                          onClick={() => {
-                            const refToCopy = customerInfo.name.trim() && customerInfo.phone.trim()
-                              ? `${customerInfo.name.trim()},${customerInfo.countryCode}${customerInfo.phone.trim().replace(/^0/, '')}`
-                              : 'Sadeep,+94705922792';
-                            navigator.clipboard.writeText(refToCopy);
-                            setCopiedRef(true);
-                            setTimeout(() => setCopiedRef(false), 2500);
-                          }}
-                          style={{
-                            padding: '0.2rem 0.65rem',
-                            fontSize: '0.75rem',
-                            borderRadius: 'var(--radius-sm)',
-                            backgroundColor: copiedRef ? '#10b981' : 'var(--bg-tertiary)',
-                            color: copiedRef ? '#ffffff' : 'var(--accent-cyan)',
-                            border: '1px solid var(--border-color)',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.3rem',
-                            fontWeight: 600,
-                            transition: 'all 0.2s ease'
-                          }}
+                          onClick={() => handleCopyBankInfo(bankDetails.accountName, 'accountName')}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '0.18rem 0.55rem', fontSize: '0.72rem', height: '26px' }}
                         >
-                          {copiedRef ? (
-                            <>
-                              <CheckCircle2 size={13} />
-                              <span>Copied!</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy size={13} />
-                              <span>Copy Reference</span>
-                            </>
-                          )}
+                          {copiedField === 'accountName' ? '✓ Copied' : 'Copy'}
                         </button>
                       </div>
+
+                      {/* Bank */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <div>
+                          <span style={{ color: 'var(--text-muted)', marginRight: '0.5rem' }}>Bank:</span>
+                          <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.bankName}</strong>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyBankInfo(bankDetails.bankName, 'bankName')}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '0.18rem 0.55rem', fontSize: '0.72rem', height: '26px' }}
+                        >
+                          {copiedField === 'bankName' ? '✓ Copied' : 'Copy'}
+                        </button>
+                      </div>
+
+                      {/* Branch */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        <div>
+                          <span style={{ color: 'var(--text-muted)', marginRight: '0.5rem' }}>Branch:</span>
+                          <strong style={{ color: 'var(--text-primary)' }}>{bankDetails.branch}</strong>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyBankInfo(bankDetails.branch, 'branch')}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '0.18rem 0.55rem', fontSize: '0.72rem', height: '26px' }}
+                        >
+                          {copiedField === 'branch' ? '✓ Copied' : 'Copy'}
+                        </button>
+                      </div>
+
+                      {/* Account Number */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap', backgroundColor: 'rgba(37, 211, 102, 0.08)', padding: '0.45rem 0.65rem', borderRadius: '4px' }}>
+                        <div>
+                          <span style={{ color: 'var(--text-muted)', marginRight: '0.5rem' }}>Account No:</span>
+                          <strong style={{ color: '#25D366', fontFamily: 'var(--font-mono)', fontSize: '0.98rem' }}>{bankDetails.accountNumber}</strong>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyBankInfo(bankDetails.accountNumber, 'accountNumber')}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem', height: '26px', backgroundColor: copiedField === 'accountNumber' ? '#10b981' : 'rgba(37, 211, 102, 0.2)', color: copiedField === 'accountNumber' ? '#ffffff' : '#25D366', border: '1px solid rgba(37, 211, 102, 0.4)', fontWeight: 700 }}
+                        >
+                          {copiedField === 'accountNumber' ? '✓ Copied Account No' : 'Copy Account No'}
+                        </button>
+                      </div>
+
+                      {/* Payment Reference */}
+                      {(() => {
+                        const currentRefStr = customerInfo.name.trim() && customerInfo.phone.trim()
+                          ? `${customerInfo.name.trim()},${customerInfo.countryCode}${customerInfo.phone.trim().replace(/^0/, '')}`
+                          : 'Sadeep,+94705922792';
+                        return (
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap', backgroundColor: 'rgba(6, 182, 212, 0.08)', padding: '0.45rem 0.65rem', borderRadius: '4px' }}>
+                            <div>
+                              <span style={{ color: 'var(--text-muted)', marginRight: '0.5rem' }}>Payment Ref:</span>
+                              <strong style={{ color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}>
+                                "{currentRefStr}"
+                              </strong>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyBankInfo(currentRefStr, 'paymentRef')}
+                              className="btn btn-secondary btn-sm"
+                              style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem', height: '26px', backgroundColor: copiedField === 'paymentRef' ? '#10b981' : 'rgba(6, 182, 212, 0.2)', color: copiedField === 'paymentRef' ? '#ffffff' : 'var(--accent-cyan)', border: '1px solid rgba(6, 182, 212, 0.4)', fontWeight: 700 }}
+                            >
+                              {copiedField === 'paymentRef' ? '✓ Copied Ref' : 'Copy Reference'}
+                            </button>
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     <div style={{ backgroundColor: 'rgba(6, 182, 212, 0.12)', borderLeft: '3px solid var(--accent-cyan)', padding: '0.6rem 0.85rem', borderRadius: '4px', fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: '1.25rem' }}>

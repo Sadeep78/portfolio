@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, MapPin, PhoneCall, Send, CheckCircle2, MessageSquare, Linkedin, ExternalLink, Briefcase, AlertCircle } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
-import { countryCodes, validatePhoneByCountry } from './Services';
+import { countryCodes, validatePhoneByCountry, validateEmailStrict, SearchableCountrySelect } from './Services';
 
 export default function Contact() {
   const { personal } = portfolioData;
@@ -21,7 +21,6 @@ export default function Contact() {
 
   // Real-time Single Field Validation
   const validateField = (field, value, currentForm = formData) => {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const nameRegex = /^[a-zA-Z\s\.\'-]+$/;
 
     if (field === 'name') {
@@ -37,11 +36,7 @@ export default function Contact() {
     }
 
     if (field === 'email') {
-      if (!value || !value.trim()) return 'Please enter your email address.';
-      if (!emailRegex.test(value.trim())) {
-        return 'Please enter a complete email address (e.g. ruwan@gmail.com).';
-      }
-      return null;
+      return validateEmailStrict(value);
     }
 
     if (field === 'phone') {
@@ -314,18 +309,10 @@ export default function Contact() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <select
+                  <SearchableCountrySelect
                     value={formData.countryCode}
-                    onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
-                    className="form-input"
-                    style={{ width: '145px', flexShrink: 0, fontWeight: 700, color: 'var(--accent-cyan)' }}
-                  >
-                    {countryCodes.map((c, idx) => (
-                      <option key={idx} value={c.code} style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
-                        {c.flag} {c.code}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(code) => setFormData({ ...formData, countryCode: code })}
+                  />
 
                   <input
                     type="tel"
